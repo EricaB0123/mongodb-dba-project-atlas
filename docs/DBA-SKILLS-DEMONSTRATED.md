@@ -16,7 +16,17 @@ This project is intentionally designed to showcase core Database Administration 
 
 #### Creating Database Users in Atlas
   
-  <img width="200" height="200" alt="Creating Database User using SCRAM - Simulating custom vs Default Roles" src="https://github.com/user-attachments/assets/8c112365-31c6-425c-b6bb-481214dc4421" />
+  <img width="400" height="200" alt="Creating Database User using SCRAM - Simulating custom vs Default Roles" src="https://github.com/user-attachments/assets/8c112365-31c6-425c-b6bb-481214dc4421" />
+
+_in this example is demonstrates 2 user types. I ended up with dbAdmin for 'DBA' and readWrite for the other 'user'. Felt readWriteAnyDatabase can be further controlled with custom roles._
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/75aca513-9faa-4a1c-b44b-cf4aa2497216" />
+
+
+_in this example i'm filtering through custom role vs default. I ended up just specifying 1 database for now with the ability to read and write_
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/cc0cb56d-a65c-4e1a-b2ad-18a75fde786d" />
+
 
 MongoDB Atlas provides a set of default built‑in roles, such as:
 
