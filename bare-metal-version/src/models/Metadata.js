@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
 
-const MetadataSchema = new mongoose.Schema({
-  datasetName: { type: String, required: true },
+const fieldSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  type: { type: String, required: true }
+});
+
+const metadataSchema = new mongoose.Schema({
+  datasetName: { type: String, required: true, unique: true },
   uploaderEmail: { type: String, required: true },
-  fields: { type: Array, default: [] },
+  fields: [fieldSchema],
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Metadata", MetadataSchema);
+module.exports = mongoose.model("Metadata", metadataSchema);
