@@ -1,7 +1,7 @@
 # DBA Skills Demonstrated
 This project is intentionally designed to showcase core Database Administration (DBA) competencies in a modern cloud‑based MongoDB Atlas environment. The focus is on operational discipline, secure configuration, lifecycle management, and ingestion workflows that mirror enterprise data‑platform patterns.
 
-🔹 1. Authentication, RBAC & User Management
+## 1. Authentication, RBAC & User Management
 - This project demonstrates secure and intentional user separation within MongoDB Atlas:
 - Creation of multiple Atlas users with role‑appropriate privileges
 - Use of SCRAM authentication
@@ -9,6 +9,13 @@ This project is intentionally designed to showcase core Database Administration 
 - Demonstration of least‑privilege access for ingestion, monitoring, and administrative tasks
 - Clear documentation of cluster setup, user creation, and network access (see DBA‑Setup.md)
 - This reflects real‑world operational practice where DBAs enforce strict access boundaries.
+
+  Located in docs/screenshots/:
+  
+  <img width="1522" height="582" alt="Creating Database User using SCRAM - Simulating custom vs Default Roles" src="https://github.com/user-attachments/assets/8c112365-31c6-425c-b6bb-481214dc4421" />
+
+<img width="865" height="187" alt="Testing Database Connection using Express connection" src="https://github.com/user-attachments/assets/787cc189-b83d-4b7a-85d7-990a2b68eb1b" />
+
 
 🔹 2. Schema Design & Validation
 Although MongoDB is schema‑flexible, this project uses Mongoose models to enforce predictable structure:
