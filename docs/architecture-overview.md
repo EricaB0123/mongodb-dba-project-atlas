@@ -113,8 +113,11 @@ Required Fields:
 
 _I created the database via Mongo Compass and via the express js commands. To demonstrate multiple ways to create the database and collections. The aim was to demonstrated the main important aspects of the database design. Particulr choosing the right collation and fields._ 
 
-<img width="100" height="200" alt="image" src="https://github.com/user-attachments/assets/4080c852-7b3f-4dca-bc97-55427cffbe27" />
+<img width="450" height="100" alt="image" src="https://github.com/user-attachments/assets/4080c852-7b3f-4dca-bc97-55427cffbe27" />
 
+_Using js to create the indexes as part of one script_
+
+<img width="450" height="100" alt="image" src="https://github.com/user-attachments/assets/e94fcb90-1685-4c61-9dab-dc1dcf1f04cf" />
 
 
 ## Collation Strategy
