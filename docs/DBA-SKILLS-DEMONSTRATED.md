@@ -10,12 +10,60 @@ This project is intentionally designed to showcase core Database Administration 
 - Clear documentation of cluster setup, user creation, and network access (see DBA‑Setup.md)
 - This reflects real‑world operational practice where DBAs enforce strict access boundaries.
 
-  Located in docs/screenshots/:
+### Demonstration of Accounts setup
+
+  Screenshots Located in docs/screenshots/
+
+#### Creating Database Users in Atlas
   
-  <img width="1522" height="582" alt="Creating Database User using SCRAM - Simulating custom vs Default Roles" src="https://github.com/user-attachments/assets/8c112365-31c6-425c-b6bb-481214dc4421" />
+  <img width="200" height="200" alt="Creating Database User using SCRAM - Simulating custom vs Default Roles" src="https://github.com/user-attachments/assets/8c112365-31c6-425c-b6bb-481214dc4421" />
 
-<img width="865" height="187" alt="Testing Database Connection using Express connection" src="https://github.com/user-attachments/assets/787cc189-b83d-4b7a-85d7-990a2b68eb1b" />
+MongoDB Atlas provides a set of default built‑in roles, such as:
 
+- read
+- readWrite
+- dbAdmin
+- clusterMonitor
+- readWriteAnyDatabase
+- dbAdminAnyDatabase
+- atlasAdmin
+
+However, these roles can be then be further controlled with the usage of custom roles. To enforce least-privilege access and align permissions with operational responsibilities. 
+
+This project demonstrates a realistic split between two operational personas:
+
+##### Database Administrator (DBA)
+Elevated privileges
+Ability to manage indexes, collections, and lifecycle operations
+Responsible for cluster health, schema validation, and ingestion governance
+
+##### Application User (readWrite)
+- Limited to inserting and reading documents
+- No administrative privileges
+- Cannot modify indexes, roles, or cluster configuration
+  
+_often there are difference in opinions to the level of access an application 'user' vs application 'service' has. The usage of the custom roles can allow for further granularity like only granting 'users' to specific indexes. To enforce the difference in responsibilities in the Cluster, Database levels. It can help to prevent the difference in 'adding app changes' vs managing a database_
+
+##### SCRAM Authentication
+Both users authenticate using SCRAM‑SHA, the industry‑standard mechanism for MongoDB Atlas.
+
+SCRAM ensures:
+- password hashing
+- challenge‑response authentication
+- secure credential exchange
+- compatibility with Atlas connection strings
+
+In enterprise environments, SCRAM is typically paired with:
+
+- RBAC (Role‑Based Access Control)
+- IP allowlists
+- network boundaries
+- audit logging
+
+_My preference with database security would be Users setup within Active Directory (AD) or LDAP groups.
+This then enforces the RBAC roles further, by automatically granting MongoDB permissions based on AD group memberships. You can also have further control within the organisation to who actually gets added to the groups_ 
+
+  
 
 🔹 2. Schema Design & Validation
 Although MongoDB is schema‑flexible, this project uses Mongoose models to enforce predictable structure:
