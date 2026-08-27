@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System files
+.DS_Store
+Thumbs.db
+
+bare-metal-version\src\controllers\*.js
+bare-metal-version\src\models\*.js
+bare-metal-version\src\routes\*.js
+bare-metal-version\src\Config\*.js
