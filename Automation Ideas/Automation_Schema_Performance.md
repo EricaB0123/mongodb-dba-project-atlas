@@ -31,5 +31,10 @@ Suggests whether embedding or referencing is more appropriate based on observed 
 
 ## Demonstration 
 
+Using the Test database setup that contains 'assets, metadata, batchRuns, and lifecycle collections'. Below is Demonstrating the development and testing of the script.
+
+### Example 1 A collection that has too many references (over‑normalized, too relational).
+### Example 2 A collection that has too much embedding (oversized documents, unbounded arrays).
+
 
 
