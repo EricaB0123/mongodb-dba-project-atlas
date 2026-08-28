@@ -8,115 +8,87 @@ It reflects real enterprise processes used in environments that rely on Atlas, A
 The project is provided in two versions:
 
 Docker version — containerised for reproducible development: https://github.com/EricaB0123/mongodb-dba-project-express-api-docker
-
 Bare‑metal version — mirrors real Atlas DBA workflows without Docker: https://github.com/EricaB0123/mongodb-dba-project-atlas-bare-metal
 
-Project Versions
-1. docker-version/
-A containerised version of the project designed for reproducible development environments and CI/CD pipelines.
-This version demonstrates modern DevOps practices and is suitable for teams using Docker in development.
+## Project Status
+This project is actively evolving into a full Atlas‑centric operational platform. Several foundational components are complete, while others are intentionally in progress as part of a structured automation roadmap.
 
-Includes:
+## Completed
+- Atlas connection workflows
+- Metadata validation foundations
+- Initial ingestion pipeline structure
+- Schema audit tooling (JSON)
+- dataset‑role mapping
 
-- Dockerfile
-- docker-compose.yml
-- containerised Express ingestion service
-- local MongoDB container (optional)
-- environment variable injection
-- isolated dev environment
+## In Progress / Future Ideas
+These components are partially implemented and currently being expanded:
 
-2. bare-metal-version/
-- A non‑Docker version designed to reflect real enterprise Atlas DBA workflows.
-- This version demonstrates how Atlas DBAs work in environments where Atlas, Terraform, Jenkins, and Octopus are used without containerisation.
+- Ingestion pipeline — structured/unstructured ingestion logic
+- Monitoring — batch lifecycle, ingestion health, schema audit integration
+- CI/CD — detailed Terraform, Vault, and Jenkins pipelines
+- Operational automation — runbook scheduling, deployment validation, Dynatrace event ingestion
 
-Includes:
-
-- direct Atlas connection
-- Express ingestion pipeline
-- metadata validation
-- structured/unstructured ingestion
-- batch monitoring
-- lifecycle stages
-- RBAC/OIDC mapping
-- operational runbooks
-- CI/CD deployment steps
-
-This version aligns with enterprise environments where Atlas is the primary database platform.
-
-Folder Structure
+## Folder Structure
 
 ```
-mongo-enterprise-dba-project/
-│
-├── docker-version/
-│   ├── docker-compose.yml
-│   ├── Dockerfile
-│   └── src/
-│
-├── bare-metal-version/
 │   ├── src/
 │   │   ├── atlas/
-│   │   ├── ingestion/
-│   │   ├── rbac/
-│   │   ├── monitoring/
+│   │   ├── ingestion/        ← in progress
+│   │   ├── rbac/             ← in progress
+│   │   ├── monitoring/       ← in progress
 │   │   └── ddl/
 │   ├── server.js
 │   ├── .env.example
 │   └── package.json
 │
-├── cicd/
+├── cicd/                     ← in progress
 │   ├── terraform/
 │   ├── vault/
 │   └── jenkins/
 │
-├── octopus-runbooks/
+├── automation-ideas/         
 │
 ├── docs/
 │
 └── README.md
-
 ```
-
-
-### MongoDB Atlas Administration
-
-- Capabilities
+## MongoDB Atlas Administration
+Enterprise Atlas workflows include:
 - Atlas RBAC & OIDC integration
 - Compass connection & view verification
 - Atlas DDL deployment via Jenkins
 - Atlas service account lifecycle
 - Batch & lifecycle monitoring
-- Atlas workflows are documented in:
 
-```
+## Documentation lives in:
+
+``
 docs/atlas-workflows.md
 src/atlas/
-octopus-runbooks/
+automation-ideas/
+``
+## Ingestion Pipeline (In Progress)
+The ingestion pipeline simulates enterprise ingestion patterns used in Atlas‑centric environments.
 
-```
+## Current Features
+metadata validation
+structured/unstructured ingestion scaffolding
+StepFunction simulation
+DataSync simulation
 
-### Ingestion Pipeline 
+## Endpoints
+POST /ingest — structured/unstructured ingestion
+GET /batch/status — batch lifecycle simulation
+GET /atlas/view — Atlas view verification
 
-#### Features
-- metadata validation
-- structured dataset ingestion
-- unstructured dataset reference storage
-- StepFunction simulation
-- DataSync simulation
+Ingestion logic lives in:
 
-#### Endpoints
-- POST /ingest — ingest structured/unstructured data
-- GET /batch/status — simulate batch lifecycle monitoring
-- GET /atlas/view — verify Atlas view access
-
-#### Ingestion logic lives in:
-
-```
+``
 bare-metal-version/src/ingestion/
 docker-version/src/ingestion/
-```
+``
 
-#### Metadata Workflow
+## Metadata Workflow
 Metadata follows enterprise patterns:
 
 - datasetName
@@ -127,15 +99,12 @@ Metadata follows enterprise patterns:
 - retention
 - lifecycleStage
 
-Metadata templates and examples are stored in:
-
-```
+Templates and examples:
+``
 ingestion/metadata/templates/
 ingestion/metadata/examples/
-```
-
-
-#### RBAC Workflow
+``
+## RBAC Workflow (In Progress)
 RBAC simulation mirrors enterprise AD/OIDC mapping:
 
 - DatasetUploaders
@@ -146,13 +115,10 @@ RBAC simulation mirrors enterprise AD/OIDC mapping:
 
 RBAC configuration lives in:
 
-```
+``
 src/atlas/rbac/
-```
-
-
-### Batch Monitoring
-
+``
+## Batch Monitoring (In Progress)
 Batch lifecycle and ingestion status are simulated using:
 
 - run status codes
@@ -162,74 +128,61 @@ Batch lifecycle and ingestion status are simulated using:
 
 Scripts live in:
 
-```
+``
 src/atlas/monitoring/
 docs/batch-monitoring.md
-```
+``
 
-
-### CI/CD Automation
-
-Terraform
-
+## CI/CD Automation (In Progress / Future Ideas)
+- Terraform
 - Atlas provider configuration
 - Vault secret retrieval
 - service account rotation
 
-### Vault
+Vault
 - secret rotation
 - versioning
 - environment separation
 
-### Jenkins
+Jenkins
 - DDL pipeline
 - release branching strategy
 - SIT → pre‑prod → prod promotion
 
-### CI/CD documentation lives in:
+CI/CD documentation:
 
-``
+```
 cicd/
-``
-
-### Octopus Runbooks
-Operational automation is documented in:
-
+Automation Ideas/
 ```
-octopus-runbooks/
-```
+The automation-ideas/ folder contains the forward‑looking automation roadmap for this project. It expands beyond runbooks into broader operational automation concepts.
 
-##### Runbooks include:
+This includes:
+- schema audit automation
+- Dynatrace event ingestion
+- ingestion quality checks
+- metadata governance automation
+- runbook scheduling concepts
+- deployment validation workflows
 
-- Atlas connection provisioning
-- RBAC mapping
-- metadata validation
-- ingestion trigger
-- DDL deployment
-- batch monitoring
-- service account rotation
+Explore the full list of ideas:
 
-These runbooks mirror real enterprise operational workflows.
-
-### Architecture 
- Documentation
+## Automation Ideas
+### Architecture Documentation
 Detailed architecture diagrams and workflow explanations live in:
 
-``
+```
 docs/
-``
-
 Topics include:
-
 - Atlas workflows
 - ingestion flow
 - metadata lifecycle
 - batch monitoring
 - CI/CD overview
+```
 
-### Purpose
+## Purpose
 This project demonstrates:
-
 - deep understanding of MongoDB Atlas
 - ability to operate enterprise ingestion pipelines
 - ability to automate operational workflows
