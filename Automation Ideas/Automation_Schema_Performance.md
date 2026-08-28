@@ -22,5 +22,14 @@ Highlights documents approaching MongoDB’s 16MB limit or showing signs of unbo
 - Embedding vs Referencing Recommendations  
 Suggests whether embedding or referencing is more appropriate based on observed patterns, array growth, and relationship density.
 
+#### When to Use This Script
+- Before or after migrations
+- During ingestion pipeline changes
+- When performance degradation is suspected
+- As part of routine DBA health checks
+- When reviewing embedding vs referencing decisions
+
 ## Demonstration 
+
+
 
