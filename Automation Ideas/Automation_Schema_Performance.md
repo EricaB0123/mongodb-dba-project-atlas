@@ -51,7 +51,167 @@ I created the loads as a script which was then uploaded it to Compass. [Database
 <img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/40c34078-9504-4e67-8ab1-b1b5501cd4b7" />
 
 
-### Example 2 A collection that has too much embedding (oversized documents, unbounded arrays).
+#### Running the script
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0d39bd6f-18ac-4e7c-9334-8c192b43ca91" />
+
+#### Json output
+
+```
+l> mongosh "mongodb+srv://username@hiddenvalues.mongodb.net/" `
+>>   --quiet `                                                         
+>>   --file ".\Automation Ideas\automation-schema-performance\automation-schema-performance.js" |                        
+>>   Out-File ".\schema-audit.json" -Encoding utf8
+
+
+```
+
+#### Html output
+
+```
+Atlas ingestionDB> load("Automation Ideas/automation-schema-performance/automation-schema-performance.js")
+
+HTML report generated: audit-report.html
+
+true
+
+```
+
+### Report output and Automation Suggestions
+
+The schema‑audit script now supports multiple output modes designed for both local development and future automation. These outputs allow the audit to be consumed in different environments — from terminal debugging to monitoring dashboards and deployment pipelines. The next phase is to operationalise the audit so it becomes part of the ingestion platform’s ongoing observability and governance.
+
+### Compass / Terminal JSON Output
+The JSON output mode provides a clean, machine‑readable representation of the audit results. This format is suitable for:
+
+- CI/CD pipelines
+- Octopus runbooks
+- ingestion validation steps
+- local debugging
+- exporting results into other tooling
+
+Because the JSON output is deterministic and stable, it can be used as an artifact in deployment pipelines or stored for comparison across runs. This is the recommended mode for automation scenarios where the audit needs to be consumed programmatically.
+
+### Terminal JSON Output
+For local development, the terminal JSON output offers a quick way to inspect schema issues without requiring external tooling. Can run the script directly against a local or Atlas cluster and immediately see:
+
+- reference‑field analysis
+- relationship inference
+- design‑issue detection
+- collection fingerprints
+
+This mode is ideal for manual checks, troubleshooting ingestion issues, or validating schema changes before committing them.
+
+#### Example output
+
+```
+======================================
+ Database Fingerprint
+======================================
+
+Database Name: ingestionDB
+Collection Count: 6
+Collections:
+ - assetTagMap
+ - tags
+ - assets
+ - categories
+ - metadata
+ - assetCategoryMap
+
+======================================
+ JSON Output
+======================================
+
+{
+  "database": "ingestionDB",
+  "collections": [
+    "assetTagMap",
+    "tags",
+    "assets",
+    "categories",
+    "metadata",
+    "assetCategoryMap"
+  ],
+  "referenceAnalysis": {
+    "assetTagMap": {
+      "referenceFields": [
+        "assetId",
+        "tagId"
+      ],
+      "distinctCounts": {
+        "assetId": 2,
+        "tagId": 3
+      }
+    },
+    "tags": {
+      "referenceFields": [],
+      "distinctCounts": {}
+    },
+    "assets": {
+      "referenceFields": [
+        "metadataId"
+      ],
+      "distinctCounts": {
+        "metadataId": 2
+      }
+    },
+    "categories": {
+      "referenceFields": [],
+      "distinctCounts": {}
+    },
+    "metadata": {
+      "referenceFields": [],
+      "distinctCounts": {}
+    },
+    "assetCategoryMap": {
+      "referenceFields": [
+        "assetId",
+        "categoryId"
+      ],
+      "distinctCounts": {
+        "assetId": 2,
+        "categoryId": 2
+      }
+    }
+  },
+  "relationships": {
+    "assetTagMap": {
+      "assetId": "Likely 1:N",
+      "tagId": "Likely 1:N"
+    },
+    "tags": {},
+    "assets": {
+      "metadataId": "Likely 1:1"
+    },
+    "categories": {},
+    "metadata": {},
+    "assetCategoryMap": {
+      "assetId": "Likely 1:1",
+      "categoryId": "Likely 1:1"
+    }
+  },
+  "designIssues": {
+    "assetTagMap": [
+      "Small document using references -> embedding recommended."
+    ],
+    "tags": [],
+    "assets": [
+      "Small document using references -> embedding recommended."
+    ],
+    "categories": [],
+    "metadata": [],
+    "assetCategoryMap": [
+      "Small document using references -> embedding recommended."
+    ]
+  }
+}
+
+======================================
+ Schema Audit Complete
+======================================
+```
+
 
 
 
