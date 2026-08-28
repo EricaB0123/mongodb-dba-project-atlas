@@ -34,6 +34,23 @@ Suggests whether embedding or referencing is more appropriate based on observed 
 Using the Test database setup that contains 'assets, metadata, batchRuns, and lifecycle collections'. Below is Demonstrating the development and testing of the script.
 
 ### Example 1 A collection that has too many references (over‑normalized, too relational).
+
+#### Pre steps:
+
+1) Made sure i had a test database setup.
+2) Made sure I had collections setup.
+
+I created the loads as a script which was then uploaded it to Compass. [Database Setup and Load Test](https://github.com/EricaB0123/mongodb-dba-project-atlas-bare-metal/blob/main/Automation%20Ideas/automation-schema-performance/Database-Setup-and-Load-Test.js)
+
+##### Running via the mongosh shell
+
+<img width="577" height="288" alt="image" src="https://github.com/user-attachments/assets/9a27e7ee-e019-45e6-bdf6-0b5372edec15" />
+
+##### Testing the data was loaded
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/40c34078-9504-4e67-8ab1-b1b5501cd4b7" />
+
+
 ### Example 2 A collection that has too much embedding (oversized documents, unbounded arrays).
 
 
