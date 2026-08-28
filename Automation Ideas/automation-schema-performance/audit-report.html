@@ -1,0 +1,104 @@
+
+<html>
+<head>
+<title>MongoDB Schema Audit Report</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  h1 { border-bottom: 2px solid #444; padding-bottom: 5px; }
+  h2 { margin-top: 30px; color: #333; }
+  pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+</style>
+</head>
+<body>
+<h1>MongoDB Schema Audit Report</h1>
+
+<h2>Collections</h2>
+<pre>[
+  "assetTagMap",
+  "tags",
+  "assets",
+  "categories",
+  "metadata",
+  "assetCategoryMap"
+]</pre>
+
+<h2>Reference Analysis</h2>
+<pre>{
+  "assetTagMap": {
+    "referenceFields": [
+      "assetId",
+      "tagId"
+    ],
+    "distinctCounts": {
+      "assetId": 2,
+      "tagId": 3
+    }
+  },
+  "tags": {
+    "referenceFields": [],
+    "distinctCounts": {}
+  },
+  "assets": {
+    "referenceFields": [
+      "metadataId"
+    ],
+    "distinctCounts": {
+      "metadataId": 2
+    }
+  },
+  "categories": {
+    "referenceFields": [],
+    "distinctCounts": {}
+  },
+  "metadata": {
+    "referenceFields": [],
+    "distinctCounts": {}
+  },
+  "assetCategoryMap": {
+    "referenceFields": [
+      "assetId",
+      "categoryId"
+    ],
+    "distinctCounts": {
+      "assetId": 2,
+      "categoryId": 2
+    }
+  }
+}</pre>
+
+<h2>Relationship Inference</h2>
+<pre>{
+  "assetTagMap": {
+    "assetId": "Likely 1:N",
+    "tagId": "Likely 1:N"
+  },
+  "tags": {},
+  "assets": {
+    "metadataId": "Likely 1:1"
+  },
+  "categories": {},
+  "metadata": {},
+  "assetCategoryMap": {
+    "assetId": "Likely 1:1",
+    "categoryId": "Likely 1:1"
+  }
+}</pre>
+
+<h2>Design Issues & Recommendations</h2>
+<pre>{
+  "assetTagMap": [
+    "Document is small but uses references → embedding may be more efficient."
+  ],
+  "tags": [],
+  "assets": [
+    "Document is small but uses references → embedding may be more efficient."
+  ],
+  "categories": [],
+  "metadata": [],
+  "assetCategoryMap": [
+    "Document is small but uses references → embedding may be more efficient."
+  ]
+}</pre>
+
+</body>
+</html>

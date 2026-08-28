@@ -1,23 +1,42 @@
-// Dynamic Schema Audit Script (Clean + Readable Version)
-// Erica's learning version — safe for mongosh, no raw text, fully dynamic
+// Dynamic Schema Audit Script with HTML Output + Design Explanations
+// Clean, readable, safe for mongosh, and perfect for learning.
 
 use('ingestionDB');
 
 // ------------------------------------------------------------
-// Formatting Helpers
+// HTML Writer Helpers
 // ------------------------------------------------------------
-function section(title) {
-  print("\n======================================");
-  print(" " + title);
-  print("======================================\n");
+const fs = require("fs");
+
+function writeHtmlStart(path) {
+  fs.writeFileSync(path, `
+<html>
+<head>
+<title>MongoDB Schema Audit Report</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  h1 { border-bottom: 2px solid #444; padding-bottom: 5px; }
+  h2 { margin-top: 30px; color: #333; }
+  pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+</style>
+</head>
+<body>
+<h1>MongoDB Schema Audit Report</h1>
+`);
 }
 
-function subheader(title) {
-  print("\n--- " + title + " ---");
+function writeHtmlSection(path, title, jsonObj) {
+  fs.appendFileSync(path, `
+<h2>${title}</h2>
+<pre>${JSON.stringify(jsonObj, null, 2)}</pre>
+`);
 }
 
-function line(label, value) {
-  print(" - " + label + ": " + value);
+function writeHtmlEnd(path) {
+  fs.appendFileSync(path, `
+</body>
+</html>
+`);
 }
 
 // ------------------------------------------------------------
@@ -38,54 +57,51 @@ function findReferenceFields(doc) {
 // ------------------------------------------------------------
 const collections = db.getCollectionNames();
 
-section("Collections Detected");
-collections.forEach(c => line("Collection", c));
+// ------------------------------------------------------------
+// Build audit data structure
+// ------------------------------------------------------------
+const auditData = {
+  collections: collections,
+  referenceAnalysis: {},
+  relationships: {},
+  designIssues: {}
+};
 
 // ------------------------------------------------------------
 // 2. Reference Field Analysis
 // ------------------------------------------------------------
-section("Reference Field Analysis");
-
-collections.forEach(coll => {
-  const sample = db[coll].findOne();
-  if (!sample) {
-    subheader(coll + " (empty)");
-    return;
-  }
-
-  subheader(coll);
-
-  const refFields = findReferenceFields(sample);
-
-  if (refFields.length === 0) {
-    line("Reference-like fields", "None");
-  } else {
-    line("Reference-like fields", refFields.join(", "));
-  }
-
-  refFields.forEach(field => {
-    const distinctCount = db[coll].distinct(field).length;
-    line(`Distinct values for ${field}`, distinctCount);
-  });
-});
-
-// ------------------------------------------------------------
-// 3. Relationship Inference
-// ------------------------------------------------------------
-section("Relationship Inference");
-
 collections.forEach(coll => {
   const sample = db[coll].findOne();
   if (!sample) return;
 
   const refFields = findReferenceFields(sample);
 
+  auditData.referenceAnalysis[coll] = {
+    referenceFields: refFields,
+    distinctCounts: {}
+  };
+
+  refFields.forEach(field => {
+    auditData.referenceAnalysis[coll].distinctCounts[field] =
+      db[coll].distinct(field).length;
+  });
+});
+
+// ------------------------------------------------------------
+// 3. Relationship Inference
+// ------------------------------------------------------------
+collections.forEach(coll => {
+  const sample = db[coll].findOne();
+  if (!sample) return;
+
+  const refFields = findReferenceFields(sample);
+  auditData.relationships[coll] = {};
+
   refFields.forEach(field => {
     const distinctValues = db[coll].distinct(field).length;
     const totalDocs = db[coll].countDocuments();
 
     let relationship = "";
-
     if (distinctValues === totalDocs) {
       relationship = "Likely 1:1";
     } else if (distinctValues < totalDocs) {
@@ -94,27 +110,49 @@ collections.forEach(coll => {
       relationship = "N:M or irregular";
     }
 
-    line(`${coll}.${field}`, relationship);
+    auditData.relationships[coll][field] = relationship;
   });
 });
 
 // ------------------------------------------------------------
-// 4. Basic Embedding Recommendations
+// 4. Design Issues & Recommendations
 // ------------------------------------------------------------
-section("Embedding Recommendations");
-
 collections.forEach(coll => {
   const sample = db[coll].findOne();
   if (!sample) return;
 
   const refFields = findReferenceFields(sample);
 
+  const issues = [];
+
+  // Over-normalization
   if (refFields.length > 2) {
-    line(coll, "Has multiple reference fields → possible over-normalization");
+    issues.push("Collection has multiple reference fields → likely over-normalized (relational-style design).");
   }
+
+  // Missed embedding opportunities
+  if (refFields.length > 0 && Object.keys(sample).length < 10) {
+    issues.push("Document is small but uses references → embedding may be more efficient.");
+  }
+
+  // Join table detection
+  if (refFields.length === 2 && Object.keys(sample).length === 2) {
+    issues.push("Collection looks like a join table (N:M) → common relational drift pattern.");
+  }
+
+  auditData.designIssues[coll] = issues;
 });
 
 // ------------------------------------------------------------
-// End
+// 5. Write HTML Report
 // ------------------------------------------------------------
-section("Schema Audit Complete");
+const outputPath = "audit-report.html";
+
+writeHtmlStart(outputPath);
+writeHtmlSection(outputPath, "Collections", auditData.collections);
+writeHtmlSection(outputPath, "Reference Analysis", auditData.referenceAnalysis);
+writeHtmlSection(outputPath, "Relationship Inference", auditData.relationships);
+writeHtmlSection(outputPath, "Design Issues & Recommendations", auditData.designIssues);
+writeHtmlEnd(outputPath);
+
+print("\nHTML report generated: audit-report.html\n");

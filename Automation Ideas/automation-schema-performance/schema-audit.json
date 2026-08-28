@@ -1,0 +1,105 @@
+﻿{
+  "reportType": "MongoDB schema audit",
+  "database": "ingestionDB",
+  "collections": [
+    "assetTagMap",
+    "tags",
+    "assets",
+    "categories",
+    "metadata",
+    "assetCategoryMap"
+  ],
+  "referenceAnalysis": [
+    {
+      "collection": "assetTagMap",
+      "empty": false,
+      "referenceFields": [
+        {
+          "field": "assetId",
+          "distinctValues": 2
+        },
+        {
+          "field": "tagId",
+          "distinctValues": 3
+        }
+      ]
+    },
+    {
+      "collection": "tags",
+      "empty": false,
+      "referenceFields": []
+    },
+    {
+      "collection": "assets",
+      "empty": false,
+      "referenceFields": [
+        {
+          "field": "metadataId",
+          "distinctValues": 2
+        }
+      ]
+    },
+    {
+      "collection": "categories",
+      "empty": false,
+      "referenceFields": []
+    },
+    {
+      "collection": "metadata",
+      "empty": false,
+      "referenceFields": []
+    },
+    {
+      "collection": "assetCategoryMap",
+      "empty": false,
+      "referenceFields": [
+        {
+          "field": "assetId",
+          "distinctValues": 2
+        },
+        {
+          "field": "categoryId",
+          "distinctValues": 2
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "collection": "assetTagMap",
+      "field": "assetId",
+      "distinctValues": 2,
+      "totalDocuments": 5,
+      "inferredRelationship": "Likely 1:N"
+    },
+    {
+      "collection": "assetTagMap",
+      "field": "tagId",
+      "distinctValues": 3,
+      "totalDocuments": 5,
+      "inferredRelationship": "Likely 1:N"
+    },
+    {
+      "collection": "assets",
+      "field": "metadataId",
+      "distinctValues": 2,
+      "totalDocuments": 2,
+      "inferredRelationship": "Likely 1:1"
+    },
+    {
+      "collection": "assetCategoryMap",
+      "field": "assetId",
+      "distinctValues": 2,
+      "totalDocuments": 2,
+      "inferredRelationship": "Likely 1:1"
+    },
+    {
+      "collection": "assetCategoryMap",
+      "field": "categoryId",
+      "distinctValues": 2,
+      "totalDocuments": 2,
+      "inferredRelationship": "Likely 1:1"
+    }
+  ],
+  "embeddingRecommendations": []
+}
