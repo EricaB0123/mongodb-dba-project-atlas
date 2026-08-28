@@ -1,76 +1,91 @@
-// Dynamic Schema Audit Script with HTML Output + Design Explanations
-// Clean, readable, safe for mongosh, and perfect for learning.
+// ============================================================================
+// Unified Schema Audit Script
+// Modes: json | dynatrace
+// ============================================================================
 
-use('ingestionDB');
-
-// ------------------------------------------------------------
-// HTML Writer Helpers
-// ------------------------------------------------------------
-const fs = require("fs");
-
-function writeHtmlStart(path) {
-  fs.writeFileSync(path, `
-<html>
-<head>
-<title>MongoDB Schema Audit Report</title>
-<style>
-  body { font-family: Arial, sans-serif; padding: 20px; }
-  h1 { border-bottom: 2px solid #444; padding-bottom: 5px; }
-  h2 { margin-top: 30px; color: #333; }
-  pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
-</style>
-</head>
-<body>
-<h1>MongoDB Schema Audit Report</h1>
-`);
+if (typeof MODE === "undefined") {
+  MODE = "json";
 }
 
-function writeHtmlSection(path, title, jsonObj) {
-  fs.appendFileSync(path, `
-<h2>${title}</h2>
-<pre>${JSON.stringify(jsonObj, null, 2)}</pre>
-`);
+// ============================================================================
+// Allowed Databases
+// ============================================================================
+const allowedDatabases = [
+  "ingestionDB"
+];
+
+// ============================================================================
+// Formatting Helpers
+// ============================================================================
+function section(title) {
+  print("");
+  print("======================================");
+  print(" " + title);
+  print("======================================");
+  print("");
 }
 
-function writeHtmlEnd(path) {
-  fs.appendFileSync(path, `
-</body>
-</html>
-`);
+function jsonBlock(obj) {
+  print(JSON.stringify(obj, null, 2));
 }
 
-// ------------------------------------------------------------
-// Helper: detect fields that look like references
-// ------------------------------------------------------------
+// ============================================================================
+// Database Fingerprint
+// ============================================================================
+const currentDB = db.getName();
+const collections = db.getCollectionNames();
+
+section("Database Fingerprint");
+print("Database Name: " + currentDB);
+print("Collection Count: " + collections.length);
+print("Collections:");
+collections.forEach(function(c) {
+  print(" - " + c);
+});
+
+// ============================================================================
+// Database Filtering
+// ============================================================================
+if (allowedDatabases.indexOf(currentDB) === -1) {
+  section("Database Filter Blocked Execution");
+  print("Current DB '" + currentDB + "' is not allowed.");
+  print("Allowed DBs:");
+  allowedDatabases.forEach(function(d) {
+    print(" - " + d);
+  });
+  print("Switch DB and re-run.");
+  quit();
+}
+
+// ============================================================================
+// Helper: detect reference-like fields
+// ============================================================================
 function findReferenceFields(doc) {
   const refFields = [];
   for (const key in doc) {
-    if (key.toLowerCase().includes("id") && key !== "_id") {
+    const lower = key.toLowerCase();
+    if (lower.indexOf("id") >= 0 && key !== "_id") {
       refFields.push(key);
     }
   }
   return refFields;
 }
 
-// ------------------------------------------------------------
-// 1. Discover collections dynamically
-// ------------------------------------------------------------
-const collections = db.getCollectionNames();
-
-// ------------------------------------------------------------
+// ============================================================================
 // Build audit data structure
-// ------------------------------------------------------------
+// ============================================================================
 const auditData = {
+  database: currentDB,
   collections: collections,
   referenceAnalysis: {},
   relationships: {},
   designIssues: {}
 };
 
-// ------------------------------------------------------------
-// 2. Reference Field Analysis
-// ------------------------------------------------------------
-collections.forEach(coll => {
+// ============================================================================
+// Reference Field Analysis
+// ============================================================================
+collections.forEach(function(coll) {
   const sample = db[coll].findOne();
   if (!sample) return;
 
@@ -81,30 +96,31 @@ collections.forEach(coll => {
     distinctCounts: {}
   };
 
-  refFields.forEach(field => {
+  refFields.forEach(function(field) {
+    const distinctValues = db[coll].distinct(field);
     auditData.referenceAnalysis[coll].distinctCounts[field] =
-      db[coll].distinct(field).length;
+      distinctValues.length;
   });
 });
 
-// ------------------------------------------------------------
-// 3. Relationship Inference
-// ------------------------------------------------------------
-collections.forEach(coll => {
+// ============================================================================
+// Relationship Inference
+// ============================================================================
+collections.forEach(function(coll) {
   const sample = db[coll].findOne();
   if (!sample) return;
 
   const refFields = findReferenceFields(sample);
   auditData.relationships[coll] = {};
 
-  refFields.forEach(field => {
-    const distinctValues = db[coll].distinct(field).length;
+  refFields.forEach(function(field) {
+    const distinctValues = db[coll].distinct(field);
     const totalDocs = db[coll].countDocuments();
 
     let relationship = "";
-    if (distinctValues === totalDocs) {
+    if (distinctValues.length === totalDocs) {
       relationship = "Likely 1:1";
-    } else if (distinctValues < totalDocs) {
+    } else if (distinctValues.length < totalDocs) {
       relationship = "Likely 1:N";
     } else {
       relationship = "N:M or irregular";
@@ -114,45 +130,109 @@ collections.forEach(coll => {
   });
 });
 
-// ------------------------------------------------------------
-// 4. Design Issues & Recommendations
-// ------------------------------------------------------------
-collections.forEach(coll => {
+// ============================================================================
+// Design Issues & Recommendations
+// ============================================================================
+collections.forEach(function(coll) {
   const sample = db[coll].findOne();
   if (!sample) return;
 
   const refFields = findReferenceFields(sample);
-
   const issues = [];
 
-  // Over-normalization
   if (refFields.length > 2) {
-    issues.push("Collection has multiple reference fields → likely over-normalized (relational-style design).");
+    issues.push("Likely over-normalized: too many reference fields.");
   }
 
-  // Missed embedding opportunities
-  if (refFields.length > 0 && Object.keys(sample).length < 10) {
-    issues.push("Document is small but uses references → embedding may be more efficient.");
+  if (refFields.length > 0 &&
+      Object.keys(sample).length < 10) {
+    issues.push("Small document using references -> embedding recommended.");
   }
 
-  // Join table detection
-  if (refFields.length === 2 && Object.keys(sample).length === 2) {
-    issues.push("Collection looks like a join table (N:M) → common relational drift pattern.");
+  if (refFields.length === 2 &&
+      Object.keys(sample).length === 2) {
+    issues.push("Looks like a join table (N:M) -> relational drift.");
   }
 
   auditData.designIssues[coll] = issues;
 });
 
-// ------------------------------------------------------------
-// 5. Write HTML Report
-// ------------------------------------------------------------
-const outputPath = "audit-report.html";
+// ============================================================================
+// MODE: JSON
+// ============================================================================
+if (MODE === "json") {
+  section("JSON Output");
+  jsonBlock(auditData);
+  section("Schema Audit Complete");
+  quit();
+}
 
-writeHtmlStart(outputPath);
-writeHtmlSection(outputPath, "Collections", auditData.collections);
-writeHtmlSection(outputPath, "Reference Analysis", auditData.referenceAnalysis);
-writeHtmlSection(outputPath, "Relationship Inference", auditData.relationships);
-writeHtmlSection(outputPath, "Design Issues & Recommendations", auditData.designIssues);
-writeHtmlEnd(outputPath);
+// ============================================================================
+// MODE: Dynatrace Dashboard
+// ============================================================================
+if (MODE === "dynatrace") {
 
-print("\nHTML report generated: audit-report.html\n");
+  function dashboardLine(severity, message) {
+    const tag = severity.toUpperCase();
+    const pad = "        ";
+    const padded = tag + pad.slice(0, 8 - tag.length);
+    print(padded + " | " + message);
+  }
+
+  section("Dynatrace-style Summary");
+
+  collections.forEach(function(coll) {
+    const issues = auditData.designIssues[coll];
+
+    if (!issues || issues.length === 0) {
+      dashboardLine("info", coll + ": No issues detected");
+      return;
+    }
+
+    issues.forEach(function(issue) {
+      let severity = "info";
+
+      if (issue.indexOf("over-normalized") >= 0) {
+        severity = "warning";
+      }
+      if (issue.indexOf("join table") >= 0) {
+        severity = "critical";
+      }
+      if (issue.indexOf("embedding") >= 0) {
+        severity = "warning";
+      }
+
+      dashboardLine(severity, coll + ": " + issue);
+    });
+  });
+
+  const dynatracePayload = collections.map(function(coll) {
+    const issues = auditData.designIssues[coll] || [];
+
+    return {
+      collection: coll,
+      issues: issues.map(function(issue) {
+        let severity = "INFO";
+        if (issue.indexOf("over-normalized") >= 0) {
+          severity = "WARNING";
+        }
+        if (issue.indexOf("join table") >= 0) {
+          severity = "CRITICAL";
+        }
+        if (issue.indexOf("embedding") >= 0) {
+          severity = "WARNING";
+        }
+        return {
+          severity: severity,
+          message: issue
+        };
+      })
+    };
+  });
+
+  section("Dynatrace Webhook Payload");
+  jsonBlock(dynatracePayload);
+
+  section("Schema Audit Complete");
+  quit();
+}
