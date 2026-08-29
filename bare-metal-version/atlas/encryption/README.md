@@ -18,11 +18,5 @@ These files are kept locally for environment-specific configuration and security
 - atlas/encryption/encryption-in-transit.md
 - atlas/encryption/kms-api-examples.md
 - atlas/encryption/kms-byok-overview.md
-- atlas/encryption/self-managed/mongod.conf
-- atlas/encryption/self-managed/kmip-overview.md
-- atlas/encryption/self-managed/wiredtiger-encryption.md
-- atlas/encryption/self-managed/key-rotation.md
-- atlas/encryption/application/encrypt-fields.js
-- atlas/encryption/application/decrypt-fields.js
-- atlas/encryption/application/encryption-policy.json
+
 
