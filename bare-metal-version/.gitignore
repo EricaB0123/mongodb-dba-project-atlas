@@ -13,8 +13,13 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
+src/Config/*.js
+src/controllers/*.js
+src/models/*.js
+src/routes/*.js
+
 # Local MongoDB self-managed encryption settings
-bare-metal-version/atlas/encryption/self-managed/mongod.conf
-bare-metal-version/atlas/encryption/self-managed/*.js
-bare-metal-version/atlas/encryption/application/*.json
-bare-metal-version/atlas/encryption/application/*.js
+atlas/encryption/self-managed/mongod.conf
+atlas/encryption/self-managed/*.js
+atlas/encryption/application/*.json
+atlas/encryption/application/*.js
