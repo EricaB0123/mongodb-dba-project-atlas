@@ -13,6 +13,9 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
+# Lock file
+package-lock.json
+
 src/Config/*.js
 src/controllers/*.js
 src/models/*.js
