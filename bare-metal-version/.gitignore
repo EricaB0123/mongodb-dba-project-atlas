@@ -17,3 +17,8 @@ bare-metal-version\src\controllers\*.js
 bare-metal-version\src\models\*.js
 bare-metal-version\src\routes\*.js
 bare-metal-version\src\Config\*.js
+
+bare-metal-version\atlas\encryption\self-managed\mongod.conf*
+bare-metal-version\atlas\encryption\self-managed\*.js
+bare-metal-version\atlas\encryption\application\*.json
+bare-metal-version\atlas\encryption\application\*.js
