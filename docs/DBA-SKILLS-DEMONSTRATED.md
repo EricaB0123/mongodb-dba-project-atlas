@@ -12,7 +12,7 @@ This project is intentionally designed to showcase core Database Administration 
 
 ### Demonstration of Accounts setup
 
-  Screenshots Located in docs/screenshots/
+  - Configuration/Scripts Located in [RBAC Folder] https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac 
 
 #### Creating Database Users in Atlas
   
