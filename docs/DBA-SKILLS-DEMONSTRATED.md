@@ -12,7 +12,7 @@ This project is intentionally designed to showcase core Database Administration 
 
 ### Demonstration of Accounts setup
 
-  - Configuration/Scripts Located in [RBAC Folder] https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac 
+  - Configuration/Scripts Located in [RBAC Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac)
 
 #### Creating Database Users in Atlas
   
@@ -71,7 +71,8 @@ In enterprise environments, SCRAM is typically paired with:
 - audit logging
 
 _My preference with database security would be Users setup within Active Directory (AD) or LDAP groups.
-This then enforces the RBAC roles further, by automatically granting MongoDB permissions based on AD group memberships. You can also have further control within the organisation to who actually gets added to the groups_ 
+This then enforces the RBAC roles further, by automatically granting MongoDB permissions based on AD group memberships. You can also have further control within the organisation to who actually gets added to the groups.
+In [RBAC Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac) I have demonstrated this sepration duty in dev Atlas cluster. The ideal setup would be usage of Groups and away from SCRAM accounts_ 
 
   
 
@@ -174,7 +175,7 @@ Screenshots and documentation show:
 This provides concrete evidence of hands‑on Atlas administration.
 
 ## Summary
-This project is not just an Express API — it is a DBA‑focused demonstration of:
+This project - has some DBA‑focused demonstration of:
 
 - Secure setup
 - RBAC
