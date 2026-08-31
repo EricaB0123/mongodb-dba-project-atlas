@@ -13,6 +13,14 @@ atlas version — mirrors real Atlas DBA workflows without Docker: https://githu
 ## Project Status
 This project is actively evolving into a full Atlas‑centric operational platform. Several foundational components are complete, while others are intentionally in progress as part of a structured automation roadmap.
 
+## Demonstration of DBA skills Demonstrated
+This project is intentionally designed to showcase core Database Administration (DBA) competencies in a modern cloud‑based MongoDB Atlas environment. The focus is on operational discipline, secure configuration, lifecycle management, and ingestion workflows that mirror enterprise data‑platform patterns.
+
+### Demonstration of setup
+- [DBA Skills Explained](https://github.com/EricaB0123/mongodb-dba-project-atlas/blob/main/docs/DBA-SKILLS-DEMONSTRATED.md)
+- Configuration/Scripts Located in [Main Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration)
+- Demonstrations Located in [docs Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/blob/main/docs/)
+
 ## Completed
 - Atlas connection workflows
 - Metadata validation foundations
