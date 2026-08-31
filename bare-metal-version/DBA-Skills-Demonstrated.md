@@ -27,6 +27,8 @@ This demonstrates:
 
 Schema validation is a critical DBA responsibility in systems where data quality matters.
 
+_I have explained the RBAC setup for this project here: [rbac](https://github.com/EricaB0123/mongodb-dba-project-atlas-bare-metal/tree/main/bare-metal-version/rbac)_
+
 ### 3. Indexing Strategy & Query Performance
 Indexes are defined and documented to support ingestion, lookup, and monitoring workflows:
 
