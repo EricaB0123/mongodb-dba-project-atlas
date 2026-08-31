@@ -75,7 +75,7 @@ This then enforces the RBAC roles further, by automatically granting MongoDB per
 
   
 
-🔹 2. Schema Design & Validation
+## 2. Schema Design & Validation
 Although MongoDB is schema‑flexible, this project uses Mongoose models to enforce predictable structure:
 
 - Metadata schema
@@ -92,7 +92,7 @@ This demonstrates:
 
 Schema validation is a critical DBA responsibility in systems where data quality matters.
 
-🔹 3. Indexing Strategy & Query Performance
+## 3. Indexing Strategy & Query Performance
 Indexes are defined and documented to support ingestion, lookup, and monitoring workflows:
 
 - Unique indexes for identifiers (e.g., datasetName, batchId)
@@ -108,7 +108,7 @@ This demonstrates:
 
 Indexes are documented in ddl/indexes.md.
 
-🔹 4. Ingestion Workflow & Lifecycle Management
+## 4. Ingestion Workflow & Lifecycle Management
 The project simulates a realistic ingestion pipeline:
 
 - Metadata ingestion
@@ -126,7 +126,7 @@ This mirrors enterprise ingestion systems where DBAs must:
 
 Screenshots and workflow documentation are included in DBA‑Setup.md.
 
-🔹 5. Monitoring, Observability & Operational Awareness
+## 5. Monitoring, Observability & Operational Awareness
 The project includes:
 
 - Batch lifecycle tracking
@@ -142,7 +142,7 @@ This demonstrates the DBA’s role in:
 - Performance analysis
 - Lifecycle governance
 
-🔹 6. Secure Operational Practices
+## 6. Secure Operational Practices
 This repository intentionally excludes sensitive operational files:
 
 - .env
@@ -159,7 +159,7 @@ This demonstrates:
 - Professional repository hygiene
 - Real‑world operational discipline
 
-🔹 7. Realistic Cloud Administration
+## 7. Realistic Cloud Administration
 Screenshots and documentation show:
 
 - Cluster creation
@@ -173,7 +173,7 @@ Screenshots and documentation show:
 
 This provides concrete evidence of hands‑on Atlas administration.
 
-🟦 Summary
+## Summary
 This project is not just an Express API — it is a DBA‑focused demonstration of:
 
 - Secure setup
