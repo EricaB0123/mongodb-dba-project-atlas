@@ -1,6 +1,12 @@
 # DBA Skills Demonstrated
 This project is intentionally designed to showcase core Database Administration (DBA) competencies in a modern cloud‑based MongoDB Atlas environment. The focus is on operational discipline, secure configuration, lifecycle management, and ingestion workflows that mirror enterprise data‑platform patterns.
 
+### Demonstration of setup
+
+  - Configuration/Scripts Located in [Main Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/)
+  - Demonstrations Located in [dcos Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/screenshots)
+
+
 ## 1. Authentication, RBAC & User Management
 - This project demonstrates secure and intentional user separation within MongoDB Atlas:
 - Creation of multiple Atlas users with role‑appropriate privileges
@@ -9,10 +15,6 @@ This project is intentionally designed to showcase core Database Administration 
 - Demonstration of least‑privilege access for ingestion, monitoring, and administrative tasks
 - Clear documentation of cluster setup, user creation, and network access (see DBA‑Setup.md)
 - This reflects real‑world operational practice where DBAs enforce strict access boundaries.
-
-### Demonstration of Accounts setup
-
-  - Configuration/Scripts Located in [RBAC Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac)
 
 #### Creating Database Users in Atlas
   
