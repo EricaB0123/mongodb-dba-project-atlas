@@ -1,4 +1,4 @@
-# mongodb-dba-project-atlas-bare-metal
+# mongodb-dba-project-atlas
 
 MongoDB Atlas Enterprise DBA Project
 Overview
@@ -8,7 +8,7 @@ It reflects real enterprise processes used in environments that rely on Atlas, A
 The project is provided in two versions:
 
 Docker version — containerised for reproducible development: https://github.com/EricaB0123/mongodb-dba-project-express-api-docker
-Bare‑metal version — mirrors real Atlas DBA workflows without Docker: https://github.com/EricaB0123/mongodb-dba-project-atlas-bare-metal
+atlas version — mirrors real Atlas DBA workflows without Docker: https://github.com/EricaB0123/mongodb-dba-project-atlas-
 
 ## Project Status
 This project is actively evolving into a full Atlas‑centric operational platform. Several foundational components are complete, while others are intentionally in progress as part of a structured automation roadmap.
@@ -84,7 +84,7 @@ GET /atlas/view — Atlas view verification
 Ingestion logic lives in:
 
 ``
-bare-metal-version/src/ingestion/
+MongoDB_Atlas_Configuration/src/ingestion/
 docker-version/src/ingestion/
 ``
 
