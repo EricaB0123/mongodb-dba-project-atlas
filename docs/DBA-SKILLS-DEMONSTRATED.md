@@ -83,8 +83,24 @@ In [RBAC Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/ma
 ## Role setup and Justification
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/193f85ec-4144-4948-8305-dbaa596e0b89" />
 
-_The Database Administrator role setup, allows the user to complete duties to create, modify, and drop collections, indexes, and user-defined roles. It also provides Cluster configuration settings.For example, the 'AtlasAdmin' maybe provide to many permissions to the cluster settings, creating a similar custom role or applying only dbAdmin on specific databases._
+The Database Administrator role is designed to give a user the ability to perform operational tasks across the database environment. This includes creating, modifying, and dropping collections, indexes, and user‑defined roles. A DBA also requires access to administrative functions such as user management, schema validation, and performance tuning. 
+By default you could apply the 'AtlasAdmin' role. However, grants very broad permissions — including cluster‑level configuration, project‑wide settings, and administrative actions that may exceed what a traditional DBA needs.
 
+To follow least‑privilege principles, it is often better to create a custom DBA role that limits permissions to:
+
+- Cluster‑level monitoring (e.g., serverStatus, connPoolStats)
+- Administrative actions within the admin database
+- Full control over specific application databases
+
+This approach avoids granting global cluster configuration rights unless they are explicitly required. In many cases, applying the built‑in dbAdmin role on selected databases — combined with custom privileges — provides a safer and more controlled permission model.
+
+This separation ensures:
+
+- Cluster configuration remains restricted
+- DBAs can manage data structures and indexes
+- Application users only receive DB‑level permissions
+- Operational monitoring can be delegated without full admin access
+- It also aligns with enterprise RBAC patterns where cluster‑level, DBA‑level, and DB‑level responsibilities are clearly separated.
 
 
 ## 2. Schema Design & Validation
