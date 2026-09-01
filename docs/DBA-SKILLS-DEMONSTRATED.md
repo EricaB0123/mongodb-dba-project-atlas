@@ -44,7 +44,7 @@ MongoDB Atlas provides a set of default built‑in roles, such as:
 
 However, these roles can be then be further controlled with the usage of custom roles. To enforce least-privilege access and align permissions with operational responsibilities. 
 
-_There are several roles within the Atlas UI, that could be separated from the DBA and Application role. Some settings like the 'autoCompact' where background tasks or  an automation account that handles these processes. For example, a ClusterMonitorRole_
+There are several roles within the Atlas UI, that could be separated from the DBA and Application role. Some settings like the 'autoCompact' where background tasks or  an automation account that handles these processes. For example, a ClusterMonitorRole.
 
 This project demonstrates a realistic split between two operational personas:
 
@@ -76,9 +76,9 @@ In enterprise environments, SCRAM is typically paired with:
 - network boundaries
 - audit logging
 
-_My preference with database security would be Users setup within Active Directory (AD) or LDAP groups.
+My preference with database security would be Users setup within Active Directory (AD) or LDAP groups.
 This then enforces the RBAC roles further, by automatically granting MongoDB permissions based on AD group memberships. You can also have further control within the organisation to who actually gets added to the groups.
-In [RBAC Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac) I have demonstrated this sepration duty in dev Atlas cluster. The ideal setup would be usage of Groups and away from SCRAM accounts_ 
+In [RBAC Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac) I have demonstrated this sepration duty in dev Atlas cluster. The ideal setup would be usage of Groups and away from SCRAM accounts.
 
 ## Role setup and Justification
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/193f85ec-4144-4948-8305-dbaa596e0b89" />
