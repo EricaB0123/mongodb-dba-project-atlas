@@ -62,7 +62,7 @@ Atlas suggests embedding when $lookup is slow. The above script suggests embeddi
    Displays the Ratio of scanned objects or documents to the number of objects returned. For example, it represents the total number of documents the database engine had to look at in memory or disk to return your results.
    
 If the Ratio of scanned objects is higher than what documents are returned. Like 100 objects vs 10documents (ratio of 10, 00:1).  The query could be looking at almost every document (like a collection scan). Often this means it lacks a proper index.
-or an index could be used but is known as an insufficient query.
+or an index could be used but is known as an insufficient index.
    
    #### OpCounters
    
