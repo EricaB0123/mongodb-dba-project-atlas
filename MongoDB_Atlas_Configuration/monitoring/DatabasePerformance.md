@@ -9,7 +9,7 @@ Atlas Monitoring tools — Have Metrics, Performance Advisor, Schema Suggestions
 There performance Gap with Atlas monitoring is the structrual drift detection. Mainly the relationship inference, and embedding vs referencing validation based on real data distribution, not query behaviour.
 
 I've started looking into areas that could help the performance further:
-[Database Design Extract Script] idea(https://github.com/EricaB0123/mongodb-dba-project-atlas/blob/main/Automation%20Ideas/Automation_Schema_Performance.md)
+[Database Design Extract Script Idea](https://github.com/EricaB0123/mongodb-dba-project-atlas/blob/main/Automation%20Ideas/Automation_Schema_Performance.md)
  VS Atlas Monitoring
 
  Atlas Does NOT Have
