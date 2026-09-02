@@ -61,7 +61,7 @@ Atlas suggests embedding when $lookup is slow. The above script suggests embeddi
    #### Scanned Objects
    Displays the Ratio of scanned objects or documents to the number of objects returned. For example, it represents the total number of documents the database engine had to look at in memory or disk to return your results.
    
-    Like If there are scans of 100,000 objects but only returns 10 documents, the ratio is 10,000:1. This means the query is looking at almost every document (collection scan). Often this means it lacks a proper index.
+If the Ratio of scanned objects is higher than what documents are returned. The query could be looking at almost every document (like a collection scan). Often this means it lacks a proper index.
    
    #### OpCounters
    
