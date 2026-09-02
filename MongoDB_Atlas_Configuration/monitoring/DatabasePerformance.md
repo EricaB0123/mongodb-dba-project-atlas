@@ -53,7 +53,7 @@ Atlas flags “bloated documents” when they cause slow queries or indexing iss
 Atlas warns about “unbounded arrays” in Schema Suggestions. 
 
 3. Embedding vs referencing hints
-Atlas suggests embedding when $lookup is slow. 
+Atlas suggests embedding when $lookup is slow. The above script suggests embedding when reference density indicates over‑normalisation — even if no $lookup has occurred yet.
 
   ### Atlas Metrics
    #### Query Targeting
