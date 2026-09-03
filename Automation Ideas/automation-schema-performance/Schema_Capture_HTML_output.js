@@ -1,9 +1,9 @@
 // ============================================================================
 // Unified Schema Audit Script
-// Author: Erica — Senior DBA / Data Platform Engineer
+// Author: Erica — Senior DBA 
 // GitHub: https://github.com/EricaB0123/
 // Modes: shell | json | html
-// Version: 1.3.0
+// Version: 1.4.0
 // ============================================================================
 
 // Do NOT override MODE if already set in shell
@@ -53,7 +53,7 @@ if (allowedDatabases.indexOf(currentDB) === -1) {
   print("Allowed DBs:");
   allowedDatabases.forEach(d => print(" - " + d));
   print("Switch DB and re-run.");
-  quit(); // allowed here because script must stop
+  quit();
 }
 
 // ============================================================================
@@ -169,3 +169,13 @@ auditData.relationshipInsights = buildRelationshipInsights();
 // ============================================================================
 collections.forEach(coll => {
   const sample = db[coll].findOne();
+  if (!sample) return;
+
+  const refFields = findReferenceFields(sample);
+  const issues = [];
+
+  if (refFields.length > 2) {
+    issues.push("Likely over-normalized: too many reference fields.");
+  }
+
+  if (refFields.length
