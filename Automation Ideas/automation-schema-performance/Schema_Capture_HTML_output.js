@@ -2,21 +2,16 @@
 // Unified Schema Audit Script
 // Author: Erica — Senior DBA / Data Platform Engineer
 // GitHub: https://github.com/EricaB0123/
-// Description: Automated schema fingerprinting, reference analysis,
-//              relationship inference, and design issue detection for MongoDB.
 // Modes: shell | json | html
-// Version: 1.2.0
+// Version: 1.3.0
 // ============================================================================
 
 // Do NOT override MODE if already set in shell
 MODE = MODE || "shell";
 
-// Mode banner
-print("");
-print("======================================");
+print("\n======================================");
 print(" Active Mode: " + MODE);
-print("======================================");
-print("");
+print("======================================\n");
 
 // ============================================================================
 // Allowed Databases
@@ -47,7 +42,6 @@ const collections = db.getCollectionNames();
 section("Database Fingerprint");
 print("Database Name: " + currentDB);
 print("Collection Count: " + collections.length);
-print("Collections:");
 collections.forEach(c => print(" - " + c));
 
 // ============================================================================
@@ -59,7 +53,7 @@ if (allowedDatabases.indexOf(currentDB) === -1) {
   print("Allowed DBs:");
   allowedDatabases.forEach(d => print(" - " + d));
   print("Switch DB and re-run.");
-  return; // patched
+  quit(); // allowed here because script must stop
 }
 
 // ============================================================================
@@ -137,7 +131,7 @@ collections.forEach(coll => {
 });
 
 // ============================================================================
-// Relationship Insights (Human-readable explanations)
+// Relationship Insights
 // ============================================================================
 function buildRelationshipInsights() {
   const insights = {};
@@ -152,6 +146,26 @@ function buildRelationshipInsights() {
       const type = rels[field];
 
       if (type === "Likely 1:1") {
-        insights[coll].push(
-          field + " appears to be a 1:1 relationship. " +
-          "
+        insights[coll].push(field + " → 1:1 relationship (tight coupling).");
+      }
+
+      if (type === "Likely 1:N") {
+        insights[coll].push(field + " → 1:N relationship (parent-child).");
+      }
+
+      if (type === "N:M or irregular") {
+        insights[coll].push(field + " → N:M or irregular (join-table behaviour).");
+      }
+    });
+  });
+
+  return insights;
+}
+
+auditData.relationshipInsights = buildRelationshipInsights();
+
+// ============================================================================
+// Design Issues
+// ============================================================================
+collections.forEach(coll => {
+  const sample = db[coll].findOne();
