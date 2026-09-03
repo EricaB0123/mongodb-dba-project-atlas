@@ -178,4 +178,111 @@ collections.forEach(coll => {
     issues.push("Likely over-normalized: too many reference fields.");
   }
 
-  if (refFields.length
+  if (refFields.length > 0 && Object.keys(sample).length < 10) {
+    issues.push("Small document using references → embedding recommended.");
+  }
+
+  if (refFields.length === 2 && Object.keys(sample).length === 2) {
+    issues.push("Looks like a join table (N:M) → relational drift.");
+  }
+
+  auditData.designIssues[coll] = issues;
+});
+
+// ============================================================================
+// MODE HANDLERS
+// ============================================================================
+
+function runShellMode() {
+  section("Schema Audit (Shell Mode)");
+  jsonBlock(auditData);
+  section("Schema Audit Complete");
+}
+
+function runJsonMode() {
+  section("JSON Output");
+  jsonBlock(auditData);
+  section("Schema Audit Complete");
+}
+
+function runHtmlMode() {
+
+  function htmlHeader(title) {
+    print("<html><head><title>" + title + "</title>");
+    print("<style>");
+    print("body { font-family: Arial; padding: 20px; }");
+    print("h1 { border-bottom: 2px solid #444; }");
+    print("h2 { margin-top: 30px; }");
+    print(".section { margin-bottom: 40px; }");
+    print(".issue { color: #b30000; }");
+    print(".insight { color: #0066cc; }");
+    print("</style></head><body>");
+    print("<h1>MongoDB Schema Audit Report</h1>");
+  }
+
+  function htmlFooter() {
+    print("</body></html>");
+  }
+
+  htmlHeader("Schema Audit");
+
+  // Database Fingerprint
+  print("<div class='section'>");
+  print("<h2>Database Fingerprint</h2>");
+  print("<p><strong>Database:</strong> " + auditData.database + "</p>");
+  print("<p><strong>Collections:</strong></p><ul>");
+  auditData.collections.forEach(c => print("<li>" + c + "</li>"));
+  print("</ul></div>");
+
+  // Reference Analysis
+  print("<div class='section'>");
+  print("<h2>Reference Analysis</h2>");
+  Object.keys(auditData.referenceAnalysis).forEach(coll => {
+    const info = auditData.referenceAnalysis[coll];
+    print("<h3>" + coll + "</h3>");
+    print("<p><strong>Reference Fields:</strong> " + info.referenceFields.join(", ") + "</p>");
+    print("<ul>");
+    Object.keys(info.distinctCounts).forEach(field => {
+      print("<li>" + field + ": " + info.distinctCounts[field] + " distinct values</li>");
+    });
+    print("</ul>");
+  });
+  print("</div>");
+
+  // Relationship Insights
+  print("<div class='section'>");
+  print("<h2>Relationship Insights</h2>");
+  Object.keys(auditData.relationshipInsights).forEach(coll => {
+    print("<h3>" + coll + "</h3>");
+    const insights = auditData.relationshipInsights[coll];
+    if (insights.length === 0) {
+      print("<p>No relationship insights detected.</p>");
+    } else {
+      insights.forEach(msg => print("<p class='insight'>" + msg + "</p>"));
+    }
+  });
+  print("</div>");
+
+  // Design Issues
+  print("<div class='section'>");
+  print("<h2>Design Issues & Recommendations</h2>");
+  Object.keys(auditData.designIssues).forEach(coll => {
+    print("<h3>" + coll + "</h3>");
+    const issues = auditData.designIssues[coll];
+    if (issues.length === 0) {
+      print("<p>No issues detected.</p>");
+    } else {
+      issues.forEach(issue => print("<p class='issue'>" + issue + "</p>"));
+    }
+  });
+  print("</div>");
+
+  htmlFooter();
+}
+
+// ============================================================================
+// MODE SWITCH
+// ============================================================================
+if (MODE === "shell") runShellMode();
+if (MODE === "json") runJsonMode();
+if (MODE === "html") runHtmlMode();
