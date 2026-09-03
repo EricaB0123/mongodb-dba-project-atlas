@@ -1,6 +1,11 @@
 // ============================================================================
 // Unified Schema Audit Script
-// Modes: json | dynatrace
+// Author: Erica — Senior DBA / Data Platform Engineer
+// GitHub: https://github.com/EricaB0123/
+// Description: Automated schema fingerprinting, reference analysis,
+//              relationship inference, and design issue detection for MongoDB.
+// Modes: json | dynatrace | html
+// Version: 1.0.0
 // ============================================================================
 
 if (typeof MODE === "undefined") {
