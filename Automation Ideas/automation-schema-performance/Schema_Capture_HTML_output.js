@@ -5,12 +5,18 @@
 // Description: Automated schema fingerprinting, reference analysis,
 //              relationship inference, and design issue detection for MongoDB.
 // Modes: shell | json | html
-// Version: 1.1.0
+// Version: 1.2.0
 // ============================================================================
 
 // Do NOT override MODE if already set in shell
 MODE = MODE || "shell";
 
+// Mode banner
+print("");
+print("======================================");
+print(" Active Mode: " + MODE);
+print("======================================");
+print("");
 
 // ============================================================================
 // Allowed Databases
@@ -53,7 +59,7 @@ if (allowedDatabases.indexOf(currentDB) === -1) {
   print("Allowed DBs:");
   allowedDatabases.forEach(d => print(" - " + d));
   print("Switch DB and re-run.");
-  quit();
+  return; // patched
 }
 
 // ============================================================================
@@ -148,31 +154,4 @@ function buildRelationshipInsights() {
       if (type === "Likely 1:1") {
         insights[coll].push(
           field + " appears to be a 1:1 relationship. " +
-          "Each document references a unique value, suggesting tight coupling."
-        );
-      }
-
-      if (type === "Likely 1:N") {
-        insights[coll].push(
-          field + " appears to be a 1:N relationship. " +
-          "Multiple documents reference the same value, suggesting parent-child structure."
-        );
-      }
-
-      if (type === "N:M or irregular") {
-        insights[coll].push(
-          field + " appears to be N:M or irregular. " +
-          "Distinct values exceed document count, suggesting join-table behavior or inconsistent references."
-        );
-      }
-    });
-  });
-
-  return insights;
-}
-
-auditData.relationshipInsights = buildRelationshipInsights();
-
-// ============================================================================
-// Design Issues & Recommendations
-// =========================================================================
+          "
