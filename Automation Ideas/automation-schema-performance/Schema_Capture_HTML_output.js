@@ -8,9 +8,9 @@
 // Version: 1.1.0
 // ============================================================================
 
-if (typeof MODE === "undefined") {
-  MODE = "shell"; // default mode
-}
+// Do NOT override MODE if already set in shell
+MODE = MODE || "shell";
+
 
 // ============================================================================
 // Allowed Databases
