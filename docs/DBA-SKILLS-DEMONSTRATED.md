@@ -53,6 +53,9 @@ Elevated privileges
 Ability to manage indexes, collections, and lifecycle operations
 Responsible for cluster health, schema validation, and ingestion governance.
 
+- MongoDB_Atlas_Configuration/rbac/users
+- when building the scripts i found default roles of higher cluster permissions. Thats when i decided the cluster admin role maybe a good example of seperating the roles further. As i didn't think some of the rights could justify dba. Ive documented the layout, considering tasks like oncall and performance issues.
+
 ##### Application User (readWrite)
 - Limited to inserting and reading documents
 - No administrative privileges
