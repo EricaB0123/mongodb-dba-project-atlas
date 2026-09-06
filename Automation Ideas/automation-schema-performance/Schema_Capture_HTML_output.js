@@ -6,6 +6,12 @@
 // Version: 1.4.0
 // ============================================================================
 
+// next steps: less switch and focus on one output. Then comeback to attempting different formats.
+// at the moment it prints the output and suggestions 
+
+
+
+
 // Do NOT override MODE if already set in shell
 MODE = MODE || "shell";
 
