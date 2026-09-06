@@ -27,7 +27,28 @@ Suggests whether embedding or referencing is more appropriate based on observed 
 - During ingestion pipeline changes
 - When performance degradation is suspected
 - As part of routine DBA health checks
-- When reviewing embedding vs referencing decisions
+- When reviewing embedding vs referencing decisions.
+
+## Table of Contents
+- [Schema Audit Script](#schema-audit-script)
+- [Overview](#overview)
+- [What the Script Does](#what-the-script-does)
+  - [Relationship Detection](#relationship-detection)
+  - [Embedded Array Analysis](#embedded-array-analysis)
+  - [High-Cardinality Field Checks](#high-cardinality-field-checks)
+  - [Oversized Document Detection](#oversized-document-detection)
+  - [Embedding vs Referencing Recommendations](#embedding-vs-referencing-recommendations)
+- [When to Use This Script](#when-to-use-this-script)
+- [Demonstration](#demonstration)
+  - [Test Database Setup](#test-database-setup)
+  - [Example 1: Over-normalized Collection](#example-1-over-normalized-collection)
+  - [Pre Steps](#pre-steps)
+  - [Running via mongosh](#running-via-mongosh)
+  - [Testing the Data Load](#testing-the-data-load)
+- [Compass / Terminal JSON Output](#compass--terminal-json-output)
+- [Improvements](#improvements)
+- [Script Logic Explanation](#script-logic-explanation)
+
 
 ## Demonstration 
 
