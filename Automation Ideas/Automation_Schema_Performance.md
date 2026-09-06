@@ -220,4 +220,8 @@ Collections:
 
 Currently working on the switch logic to show different format output. Ive attached 2 scripts for now. eventually into one less confusing output. main idea is to show the format and suggestions and it can be adjusted. for lijes of monitoring or further dba context.
 
+## Script Logic Explanation
+
+
+
 
