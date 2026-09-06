@@ -22,12 +22,12 @@ This project is intentionally designed to showcase core Database Administration 
   
   <img width="400" height="200" alt="Creating Database User using SCRAM - Simulating custom vs Default Roles" src="https://github.com/user-attachments/assets/8c112365-31c6-425c-b6bb-481214dc4421" />
 
-_in this example is demonstrates 2 user types. I ended up with dbAdmin for 'DBA' and readWrite for the other 'user'. Felt readWriteAnyDatabase can be further controlled with custom roles._
+_in this example its demonstrates 2 user types. I initily ended up with dbAdmin for 'DBA' and readWrite for the other 'user'. Felt readWriteAnyDatabase can be further controlled with custom roles. Below explains my further thinking. _
 
 <img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/75aca513-9faa-4a1c-b44b-cf4aa2497216" />
 
 
-_in this example i'm filtering through custom role vs default. I ended up just specifying 1 database for now with the ability to read and write_
+_in this example i'm filtering through custom role vs default. I initily ended up just specifying 1 database for now with the ability to read and write_
 
 <img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/cc0cb56d-a65c-4e1a-b2ad-18a75fde786d" />
 
@@ -44,7 +44,7 @@ MongoDB Atlas provides a set of default built‑in roles, such as:
 
 However, these roles can be then be further controlled with the usage of custom roles. To enforce least-privilege access and align permissions with operational responsibilities. 
 
-There are several roles within the Atlas UI, that could be separated from the DBA and Application role. Some settings like the 'autoCompact' where background tasks or  an automation account that handles these processes. For example, a ClusterMonitorRole.
+My thinking, in order to show RBAC is that because there are several roles within the Atlas UI, these deafult permissions on roles could be separated further for the DBA and Application role. I found Some settings like the 'autoCompact' where background tasks or  an automation account that handles these processes. For example, a ClusterMonitorRole. Might be argued as needed for oncall but also a higher level permission than the dba tasks.
 
 This project demonstrates a realistic split between two operational personas:
 
@@ -63,6 +63,11 @@ Responsible for cluster health, schema validation, and ingestion governance.
   
 _often there are difference in opinions to the level of access an application 'user' vs application 'service' has. The usage of the custom roles can allow for further granularity like only granting 'users' to specific indexes. To enforce the difference in responsibilities in the Cluster, Database levels. It can help to prevent the difference in 'adding app changes' vs managing a database_
 
+Also included
+
+## Cluster Admin
+To demonstrate thinking around cluster permissions within Atlas.
+
 ##### SCRAM Authentication
 Both users authenticate using SCRAM‑SHA, the industry‑standard mechanism for MongoDB Atlas.
 
@@ -79,7 +84,7 @@ In enterprise environments, SCRAM is typically paired with:
 - network boundaries
 - audit logging
 
-My preference with database security would be Users setup within Active Directory (AD) or LDAP groups.
+My preference with database security would be Users setup within Active Directory (AD) or LDAP groups. Or cloud equivalent.
 This then enforces the RBAC roles further, by automatically granting MongoDB permissions based on AD group memberships. You can also have further control within the organisation to who actually gets added to the groups.
 In [RBAC Folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac) I have demonstrated this sepration duty in dev Atlas cluster. The ideal setup would be usage of Groups and away from SCRAM accounts.
 
