@@ -159,7 +159,34 @@ class MongoSchemaAudit {
     return results;
   }
 
-  
+  detectDesignIssues(doc) {
+  const issues = [];
+
+  if (!doc || typeof doc !== "object") {
+    return issues;
+  }
+
+  const referenceFields = this.findReferenceFields(doc);
+  const fieldCount = Object.keys(doc).length;
+
+  // Over-normalization: too many reference fields
+  if (referenceFields.length > 2) {
+    issues.push("Likely over-normalized: too many reference fields.");
+  }
+
+  // Small document using references → embedding recommended
+  if (referenceFields.length > 0 && fieldCount < 10) {
+    issues.push("Small document using references → embedding recommended.");
+  }
+
+  // Join-table pattern (N:M relational drift)
+  if (referenceFields.length === 2 && fieldCount === 2) {
+    issues.push("Looks like a join table (N:M) → relational drift.");
+  }
+
+  return issues;
+}
+
   
 
 }
@@ -310,11 +337,38 @@ async function testSampleDocument() {
   await audit.disconnect();
 }
 
+async function testDetectDesignIssues() {
+  const uri = process.argv[2];
+  const dbName = process.argv[3];
+  const collName = process.argv[4];
+
+  if (!uri || !dbName || !collName) {
+    console.log("Usage: node script.js <uri> <dbName> <collName>");
+    return;
+  }
+
+  const audit = new MongoSchemaAudit(uri);
+  await audit.connect();
+
+  const sample = await audit.sampleDocument(dbName, collName);
+
+  if (!sample) {
+    console.log("Collection is empty or inaccessible.");
+  } else {
+    const issues = audit.detectDesignIssues(sample);
+    console.log("Design Issues:", issues);
+  }
+
+  await audit.disconnect();
+}
+
+
 // Uncomment this line when testing:
 //testSampleDocument();
 // main();
 //testFindReferenceFields();
-testAnalyzeReferenceFields();
+//testAnalyzeReferenceFields();
+testDetectDesignIssues();
 
 
 async function main() {
