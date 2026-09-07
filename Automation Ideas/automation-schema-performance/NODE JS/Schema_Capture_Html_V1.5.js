@@ -9,19 +9,13 @@ Changes:
 - Added Classes to make the script easier to filter the output and not have to specify the database name in the script.
 - Added classes to help filter the mode the user will choose to output the audit data.
 
-
 next steps: 
 - less switch and focus on one output. Then comeback to attempting different formats.
 - at the moment it prints the output and suggestions 
-*/
+============================================================================ */
 
 const fs = require("fs");
-// when using node.js instead of mongoshell.
 const { MongoClient } = require("mongodb");
-
-
-//Class Structure
-
 
 /*
     Setting up a class to tidy up the functions and make it easier to manage the output. 
@@ -29,34 +23,87 @@ const { MongoClient } = require("mongodb");
     This will help in maintaining the code and adding new features in the future.
 */
 
-class MongoSchemaAudit{
+/* ============================================================================
+MongoSchemaAudit — NEW main audit engine
+This replaces the old MongoAuditEngine completely.
+============================================================================ */
 
-  constructor(client) {
-    this.client = client;
+class MongoSchemaAudit {
+
+  constructor(uri) {
+    this.client = new MongoClient(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
   }
 
-  async getDatabases() 
-  {
-  const adminDb = this.client.db().admin();
-  const dbList = await adminDb.listDatabases();
-  return dbList.databases.map(db => db.name);
-}
+  async connect() {
+    await this.client.connect();
+  }
+
+  async disconnect() {
+    await this.client.close();
+  }
+
+  async getDatabases() {
+    const adminDb = this.client.db().admin();
+    const dbList = await adminDb.listDatabases();
+    return dbList.databases.map(db => db.name);
+  }
+
+  async getCollections(dbName) {
+    const db = this.client.db(dbName);
+    const collections = await db.listCollections().toArray();
+    return collections.map(c => c.name);
+  }
+
+  async inferRelationships(dbName, collName) {
+    const db = this.client.db(dbName);
+    const collection = db.collection(collName);
+
+    // 1. Sample a document
+    const sample = await collection.findOne();
+    if (!sample) return {}; // empty collection
+
+    // 2. Find reference-like fields
+    const fields = Object.keys(sample);
+    const referenceFields = fields.filter(
+      f => f.toLowerCase().includes("id") && f !== "_id"
+    );
+
+    const results = {};
+
+    // 3. Count total documents
+    const totalDocs = await collection.countDocuments();
+
+    // 4. For each reference field, infer relationship type
+    for (const field of referenceFields) {
+      const distinctValues = await collection.distinct(field);
+
+      let relationship = "";
+
+      if (distinctValues.length === totalDocs) {
+        relationship = "Likely 1:1";
+      } else if (distinctValues.length < totalDocs) {
+        relationship = "Likely 1:N";
+      } else {
+        relationship = "N:M or irregular";
+      }
+
+      results[field] = relationship;
+    }
+
+    return results;
+  }
+
+  
 
 }
 
-// Add this class to handle the database connection
-
-
-
-// Add these as classes to handle the expected modes of the html, json output.
 
 class ShellAuditRunner {
   run(auditData) {
-    //section("Schema Audit (Shell Mode)");
-    //jsonBlock(auditData);
-    //section("Schema Audit Complete");
     console.log("=== Schema Audit (Shell Mode) ===");
-    //console.log(JSON.stringify(auditData, null, 2));
     console.log(JSON.stringify(auditData, null, 2));
     console.log("=== Schema Audit Complete ===");
   }
@@ -64,7 +111,6 @@ class ShellAuditRunner {
 
 class JsonAuditRunner {
 
-    // Added the Json function to the class to help with the output of the json data.
   jsonBlock(obj) {
     return JSON.stringify(obj, null, 2);
   }
@@ -75,10 +121,10 @@ class JsonAuditRunner {
     console.log(" " + title);
     console.log("======================================");
     console.log("");
-  }  
+  }
+
   run(auditData) {
     console.log("JSON Output");
-   // jsonBlock(auditData);
     console.log(this.jsonBlock(auditData));
     console.log("Schema Audit Complete");
   }
@@ -87,18 +133,10 @@ class JsonAuditRunner {
 class HtmlAuditRunner {
 
   htmlBlock(obj) {
-   //swapping print to return to tril html output
-
-   //print("<pre>" + JSON.stringify(obj, null, 2) + "</pre>");
-   return `<pre>${JSON.stringify(obj, null, 2)}</pre>`;
-//    return "<pre>" + JSON.stringify(obj, null, 2) + "</pre>";}
+    return `<pre>${JSON.stringify(obj, null, 2)}</pre>`;
   }
+
   run(auditData) {
-    // Note: Adjusted to use auditData if needed
-   //console.log("<html><head><title>Schema Audit HTML Report</title></head><body>");
-    //console.log(this.htmlBlock(auditData));
-    //console.log("</body></html>");
-   
     const html = `
 <html>
 <head>
@@ -109,46 +147,69 @@ ${this.htmlBlock(auditData)}
 </body>
 </html>
 `;
-       fs.writeFileSync("schema_audit.html", html);
+    fs.writeFileSync("schema_audit.html", html);
     console.log("HTML report written to schema_audit.html");
   }
+}
+
+
+class SchemaAuditMode {
+  constructor() {
+    this.auditDataModes = {
+      shell: new ShellAuditRunner(),
+      json: new JsonAuditRunner(),
+      html: new HtmlAuditRunner()
+    };
   }
 
+  HandleScriptMode(mode, auditData) {
+    const auditMode = this.auditDataModes[mode];
 
-
-
-    //Called it schemasauditmode to trial out the ability to better filter out the output modes.
-class SchemaAuditMode {
-    constructor() {
-        // Map mode strings to their respective class methods
-        this.auditDataModes = {
-        shell: new ShellAuditRunner(),
-        json: new JsonAuditRunner(),
-        html: new HtmlAuditRunner()
-        };
+    if (!auditMode) {
+      const allowedModes = Object.keys(this.auditDataModes).join(", ");
+      console.log(`Allowed modes: ${allowedModes}`);
+      console.log(`Invalid MODE: ${mode}. Allowed modes: ${allowedModes}`);
+      return;
     }
 
-    // Accept the chosen mode and the data to process
-    HandleScriptMode(mode, auditData) {
-        const auditMode = this.auditDataModes[mode];
-        
-        if (!auditMode) {
-            const allowedModes = Object.keys(this.auditDataModes).join(", ");
-            console.log(`Allowed modes: ${allowedModes}`);
-            console.log(`Invalid MODE: ${mode}. Allowed modes: ${allowedModes}`);
-            return;
-        }
-            // Pass the data down to the selected mode function
-            auditMode.run(auditData);
-        
-    }
+    auditMode.run(auditData);
+  }
 }
+
+/* ============================================================================
+TEMPORARY TEST — sampleDocument
+Place this BEFORE main(), AFTER the class.
+============================================================================ */
+
+async function testSampleDocument() {
+  const uri = process.argv[2];
+  const dbName = process.argv[3];
+  const collName = process.argv[4];
+
+  if (!uri || !dbName || !collName) {
+    console.log("Usage: node script.js <uri> <dbName> <collName>");
+    return;
+  }
+
+  const audit = new MongoSchemaAudit(uri);
+  await audit.connect();
+
+  const sample = await audit.sampleDocument(dbName, collName);
+  console.log("Sample document:", sample);
+
+  await audit.disconnect();
+}
+
+// Uncomment this line when testing:
+ testSampleDocument();
+
+
 async function main() {
- // Sample data to test the script
-//const auditData = { status: "success", items: [1, 2, 3] };
+
   const modeType = process.argv[2]; // shell | json | html
   const uri = process.argv[3];      // MongoDB URI
-if (!modeType) {
+
+  if (!modeType) {
     console.log("Please specify a mode: shell | json | html");
     return;
   }
@@ -158,17 +219,22 @@ if (!modeType) {
     return;
   }
 
-  
-
-  const engine = new MongoAuditEngine(uri);
+  // NEW ENGINE
+  const engine = new MongoSchemaAudit(uri);
   await engine.connect();
 
-  const auditData = await engine.runFullAudit();
+  // TEMPORARY TEST OUTPUT (until runAudit is implemented)
+  const databases = await engine.getDatabases();
+
+  const auditData = {
+    scannedAt: new Date().toISOString(),
+    databases: databases
+  };
+
   await engine.disconnect();
 
-
-// Call the Mode class
-const handleMode = new SchemaAuditMode();
-handleMode.HandleScriptMode(modeType, auditData);
+  const handleMode = new SchemaAuditMode();
+  handleMode.HandleScriptMode(modeType, auditData);
 }
+
 main();

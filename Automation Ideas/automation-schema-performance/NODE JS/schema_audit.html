@@ -5,141 +5,14 @@
 </head>
 <body>
 <pre>{
-  "scannedAt": "2026-09-07T09:10:06.893Z",
-  "databases": {
-    "db": {
-      "collections": {
-        "items": {
-          "empty": true
-        }
-      }
-    },
-    "ingestionDB": {
-      "collections": {
-        "assetTagMap": {
-          "fields": [
-            "_id",
-            "assetId",
-            "tagId"
-          ],
-          "referenceFields": [
-            "assetId",
-            "tagId"
-          ],
-          "sample": {
-            "_id": "6a914ea5c0d4142e6c678278",
-            "assetId": "asset123",
-            "tagId": "t1"
-          }
-        },
-        "tags": {
-          "fields": [
-            "_id",
-            "name"
-          ],
-          "referenceFields": [],
-          "sample": {
-            "_id": "t1",
-            "name": "portrait"
-          }
-        },
-        "assets": {
-          "fields": [
-            "_id",
-            "name",
-            "metadataId",
-            "createdAt"
-          ],
-          "referenceFields": [
-            "metadataId"
-          ],
-          "sample": {
-            "_id": "asset123",
-            "name": "Image001.png",
-            "metadataId": "meta789",
-            "createdAt": "2026-08-28T10:00:00.000Z"
-          }
-        },
-        "categories": {
-          "fields": [
-            "_id",
-            "name"
-          ],
-          "referenceFields": [],
-          "sample": {
-            "_id": "c1",
-            "name": "photography"
-          }
-        },
-        "metadata": {
-          "fields": [
-            "_id",
-            "resolution",
-            "colorSpace",
-            "camera"
-          ],
-          "referenceFields": [],
-          "sample": {
-            "_id": "meta789",
-            "resolution": "1920x1080",
-            "colorSpace": "sRGB",
-            "camera": "Canon R6"
-          }
-        },
-        "assetCategoryMap": {
-          "fields": [
-            "_id",
-            "assetId",
-            "categoryId"
-          ],
-          "referenceFields": [
-            "assetId",
-            "categoryId"
-          ],
-          "sample": {
-            "_id": "6a914ea5c0d4142e6c67827d",
-            "assetId": "asset123",
-            "categoryId": "c1"
-          }
-        }
-      }
-    },
-    "test": {
-      "collections": {
-        "assets": {
-          "empty": true
-        },
-        "batchruns": {
-          "empty": true
-        },
-        "metadatas": {
-          "empty": true
-        },
-        "ingestQueue": {
-          "empty": true
-        },
-        "metadata": {
-          "empty": true
-        },
-        "ingestqueues": {
-          "empty": true
-        },
-        "batchRuns": {
-          "empty": true
-        }
-      }
-    },
-    "admin": {
-      "collections": {}
-    },
-    "local": {
-      "collections": {
-        "oplog.rs": {
-          "empty": true
-        }
-      }
-    }
-  }
+  "scannedAt": "2026-09-07T09:16:55.137Z",
+  "databases": [
+    "db",
+    "ingestionDB",
+    "test",
+    "admin",
+    "local"
+  ]
 }</pre>
 </body>
 </html>
