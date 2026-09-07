@@ -243,6 +243,7 @@ Currently working on the switch logic to show different format output. Ive attac
 
 ## Script Logic Explanation
 
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/6fc6b2a2-0416-44c8-9d65-05bd083d6d2a" />
 
 
 
