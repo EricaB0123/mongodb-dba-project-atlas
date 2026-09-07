@@ -187,7 +187,95 @@ class MongoSchemaAudit {
   return issues;
 }
 
-  
+  buildRelationshipInsights(relationships) {
+  const insights = {};
+
+  // relationships = { collName: { fieldName: "Likely 1:N", ... } }
+
+  for (const collName of Object.keys(relationships)) {
+    const rels = relationships[collName];
+    insights[collName] = [];
+
+    for (const field of Object.keys(rels)) {
+      const type = rels[field];
+
+      if (type === "Likely 1:1") {
+        insights[collName].push(
+          `${field} → 1:1 relationship (tight coupling).`
+        );
+      }
+
+      if (type === "Likely 1:N") {
+        insights[collName].push(
+          `${field} → 1:N relationship (parent-child).`
+        );
+      }
+
+      if (type === "N:M or irregular") {
+        insights[collName].push(
+          `${field} → N:M or irregular (join-table behaviour).`
+        );
+      }
+    }
+  }
+
+  return insights;
+}
+
+// Main Audit Function Pulling apart and rebuidling the functions withint e main class
+async runAudit() {
+  const auditData = {
+    scannedAt: new Date().toISOString(),
+    databases: {},
+  };
+
+  // 1. Get all databases
+  const dbNames = await this.getDatabases();
+
+  for (const dbName of dbNames) {
+    const dbReport = {
+      collections: [],
+      referenceAnalysis: {},
+      relationships: {},
+      relationshipInsights: {},
+      designIssues: {}
+    };
+
+    // 2. Get collections for this database
+    const collections = await this.getCollections(dbName);
+    dbReport.collections = collections;
+
+    // 3. Loop each collection and run analysis
+    for (const collName of collections) {
+
+      // Sample document
+      const sample = await this.sampleDocument(dbName, collName);
+
+      // Reference field analysis
+      const refAnalysis = await this.analyzeReferenceFields(dbName, collName);
+      dbReport.referenceAnalysis[collName] = refAnalysis;
+
+      // Relationship inference
+      const relationships = await this.inferRelationships(dbName, collName);
+      dbReport.relationships[collName] = relationships;
+
+      // Design issues
+      const issues = this.detectDesignIssues(sample);
+      dbReport.designIssues[collName] = issues;
+    }
+
+    // 4. Build relationship insights AFTER all relationships are collected
+    dbReport.relationshipInsights = this.buildRelationshipInsights(
+      dbReport.relationships
+    );
+
+    // 5. Store this database report
+    auditData.databases[dbName] = dbReport;
+  }
+
+  return auditData;
+}
+
 
 }
 
@@ -317,6 +405,32 @@ class SchemaAuditMode {
 TEMPORARY TEST — sampleDocument
 Place this BEFORE main(), AFTER the class.
 ============================================================================ */
+async function testBuildRelationshipInsights() {
+  const uri = process.argv[2];
+  const dbName = process.argv[3];
+  const collName = process.argv[4];
+
+  if (!uri || !dbName || !collName) {
+    console.log("Usage: node script.js <uri> <dbName> <collName>");
+    return;
+  }
+
+  const audit = new MongoSchemaAudit(uri);
+  await audit.connect();
+
+  // Step 1: infer relationships for this single collection
+  const rel = await audit.inferRelationships(dbName, collName);
+
+  // Step 2: wrap in collection structure expected by buildRelationshipInsights
+  const relObj = { [collName]: rel };
+
+  // Step 3: generate insights
+  const insights = audit.buildRelationshipInsights(relObj);
+
+  console.log("Relationship Insights:", insights);
+
+  await audit.disconnect();
+}
 
 async function testSampleDocument() {
   const uri = process.argv[2];
@@ -362,13 +476,33 @@ async function testDetectDesignIssues() {
   await audit.disconnect();
 }
 
+async function testRunAudit() {
+  const uri = process.argv[2];
+
+  if (!uri) {
+    console.log("Usage: node script.js <uri>");
+    return;
+  }
+
+  const audit = new MongoSchemaAudit(uri);
+  await audit.connect();
+
+  const result = await audit.runAudit();
+  console.log("Full Audit Result:", JSON.stringify(result, null, 2));
+
+  await audit.disconnect();
+}
+
 
 // Uncomment this line when testing:
 //testSampleDocument();
 // main();
 //testFindReferenceFields();
 //testAnalyzeReferenceFields();
-testDetectDesignIssues();
+//testDetectDesignIssues();
+//testBuildRelationshipInsights();
+// main();
+testRunAudit();
 
 
 async function main() {
