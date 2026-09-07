@@ -57,6 +57,20 @@ class MongoSchemaAudit {
     return collections.map(c => c.name);
   }
 
+  async sampleDocument(dbName, collName) {
+  const db = this.client.db(dbName);
+  const collection = db.collection(collName);
+
+  try {
+    const sample = await collection.findOne();
+    return sample || null;   // return null for empty collections
+  } catch (err) {
+    console.log(`Error sampling ${dbName}.${collName}:`, err.message);
+    return null;
+  }
+}
+
+
   async inferRelationships(dbName, collName) {
     const db = this.client.db(dbName);
     const collection = db.collection(collName);
