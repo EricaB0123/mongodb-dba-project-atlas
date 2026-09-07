@@ -237,4 +237,4 @@ async function main() {
   handleMode.HandleScriptMode(modeType, auditData);
 }
 
-main();
+//main();
