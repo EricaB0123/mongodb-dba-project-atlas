@@ -26,22 +26,58 @@ next steps:
     //Called it schemasauditmode to trial out the ability to better filter out the output modes.
     class SchemaAuditMode {
 
-        constructor(auditDataMode) {
-            this.auditDataMode = auditDataMode;
+        constructor() {
+            this.auditDataModes = {
+
+            shell: this.runShellMode.bind(this),
+            json: this.runJsonMode.bind(this),
+            html: this.runHtmlMode.bind(this)
+            };
+            
         }
 
-        //Testing the Class by printing out the auditDataMode object in shell mode
-        printAuditData() {
-            if (this.auditDataMode === "shell") {   
-            
-            print(" Active Mode: " + this.auditDataMode);
-            print("======================================\n");
-            print(JSON.stringify(auditData, null, 2));
+        
+        // Use the Filter Mode Class
+        HandleScriptMode(auditDataModes) {
+
+            const auditMode = this.auditDataModes[MODE];
+            if (auditMode) {
+                auditMode();
+            } else {
+                print("Invalid MODE: " + MODE);
+                print("Allowed modes: shell, json, html");
+                console.error(`Unknown mode: ${auditMode}`);
             }
 
-        }         
+
+
+        }
+
+        runShellMode() {
+            section("Schema Audit (Shell Mode)");
+            jsonBlock(auditData);
+            section("Schema Audit Complete");
+        }
+
+        runjsonMode() {
+            section("JSON Output");
+            jsonBlock(auditData);
+            section("Schema Audit Complete");
+        }   
+        runHtmlMode() {
+            function htmlHeader(title) {
+                print("<html><head><title>" + title + "</title>");      
+        
+            }
+        }
+
 
     }
+     //Call the Mode class
+     const handleMode = new SchemaAuditMode();
+     handleMode.HandleScriptMode("json");
+     
+
 
     //THis class will handle the database and its collections, making it easier to manage and analyze the schema.
 
