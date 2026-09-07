@@ -35,90 +35,16 @@ class MongoSchemaAudit{
     this.client = client;
   }
 
-  async getDatabases() {
-    // we'll implement this now
-  }
+  async getDatabases() 
+  {
+  const adminDb = this.client.db().admin();
+  const dbList = await adminDb.listDatabases();
+  return dbList.databases.map(db => db.name);
+}
 
 }
 
 // Add this class to handle the database connection
-class MongoAuditEngine {
-  constructor(uri) {
-    this.client = new MongoClient(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
-  }
-
-  async connect() {
-    await this.client.connect();
-  }
-
-  async disconnect() {
-    await this.client.close();
-  }
-
-  async runFullAudit() {
-    const adminDb = this.client.db().admin();
-
-    const dbList = await adminDb.listDatabases();
-    const databases = dbList.databases.map(db => db.name);
-
-    const auditReport = {
-      scannedAt: new Date().toISOString(),
-      databases: {}
-    };
-
-    for (const dbName of databases) {
-      const db = this.client.db(dbName);
-
-      let collections;
-      try {
-        collections = await db.listCollections().toArray();
-      } catch {
-        auditReport.databases[dbName] = {
-          error: `No access to database: ${dbName}`
-        };
-        continue;
-      }
-
-      auditReport.databases[dbName] = { collections: {} };
-
-      for (const coll of collections) {
-        const collName = coll.name;
-        const collection = db.collection(collName);
-
-        let sampleDoc;
-        try {
-          sampleDoc = await collection.findOne();
-        } catch {
-          auditReport.databases[dbName].collections[collName] = {
-            error: `No access to collection: ${collName}`
-          };
-          continue;
-        }
-
-        if (!sampleDoc) {
-          auditReport.databases[dbName].collections[collName] = {
-            empty: true
-          };
-          continue;
-        }
-
-        const fields = Object.keys(sampleDoc);
-        const referenceFields = fields.filter(f => f.toLowerCase().includes("id") && f !== "_id");
-
-        auditReport.databases[dbName].collections[collName] = {
-          fields,
-          referenceFields,
-          sample: sampleDoc
-        };
-      }
-    }
-
-    return auditReport;
-  }
-}
 
 
 
