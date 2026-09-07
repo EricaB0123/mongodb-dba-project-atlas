@@ -16,6 +16,9 @@ next steps:
 */
 
 const fs = require("fs");
+// when using node.js instead of mongoshell.
+const { MongoClient } = require("mongodb");
+
 
 //Class Structure
 
@@ -25,6 +28,99 @@ const fs = require("fs");
     The class will handle the different modes (shell, json, html) and provide methods for formatting and printing the audit data. 
     This will help in maintaining the code and adding new features in the future.
 */
+
+class MongoSchemaAudit{
+
+  constructor(client) {
+    this.client = client;
+  }
+
+  async getDatabases() {
+    // we'll implement this now
+  }
+
+}
+
+// Add this class to handle the database connection
+class MongoAuditEngine {
+  constructor(uri) {
+    this.client = new MongoClient(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+  }
+
+  async connect() {
+    await this.client.connect();
+  }
+
+  async disconnect() {
+    await this.client.close();
+  }
+
+  async runFullAudit() {
+    const adminDb = this.client.db().admin();
+
+    const dbList = await adminDb.listDatabases();
+    const databases = dbList.databases.map(db => db.name);
+
+    const auditReport = {
+      scannedAt: new Date().toISOString(),
+      databases: {}
+    };
+
+    for (const dbName of databases) {
+      const db = this.client.db(dbName);
+
+      let collections;
+      try {
+        collections = await db.listCollections().toArray();
+      } catch {
+        auditReport.databases[dbName] = {
+          error: `No access to database: ${dbName}`
+        };
+        continue;
+      }
+
+      auditReport.databases[dbName] = { collections: {} };
+
+      for (const coll of collections) {
+        const collName = coll.name;
+        const collection = db.collection(collName);
+
+        let sampleDoc;
+        try {
+          sampleDoc = await collection.findOne();
+        } catch {
+          auditReport.databases[dbName].collections[collName] = {
+            error: `No access to collection: ${collName}`
+          };
+          continue;
+        }
+
+        if (!sampleDoc) {
+          auditReport.databases[dbName].collections[collName] = {
+            empty: true
+          };
+          continue;
+        }
+
+        const fields = Object.keys(sampleDoc);
+        const referenceFields = fields.filter(f => f.toLowerCase().includes("id") && f !== "_id");
+
+        auditReport.databases[dbName].collections[collName] = {
+          fields,
+          referenceFields,
+          sample: sampleDoc
+        };
+      }
+    }
+
+    return auditReport;
+  }
+}
+
+
 
 // Add these as classes to handle the expected modes of the html, json output.
 
@@ -121,14 +217,32 @@ class SchemaAuditMode {
         
     }
 }
-
+async function main() {
  // Sample data to test the script
-const auditData = { status: "success", items: [1, 2, 3] };
+//const auditData = { status: "success", items: [1, 2, 3] };
+  const modeType = process.argv[2]; // shell | json | html
+  const uri = process.argv[3];      // MongoDB URI
+if (!modeType) {
+    console.log("Please specify a mode: shell | json | html");
+    return;
+  }
 
-const modeType = process.argv[2];
+  if (!uri) {
+    console.log("Please provide a MongoDB URI");
+    return;
+  }
+
+  
+
+  const engine = new MongoAuditEngine(uri);
+  await engine.connect();
+
+  const auditData = await engine.runFullAudit();
+  await engine.disconnect();
 
 
 // Call the Mode class
 const handleMode = new SchemaAuditMode();
 handleMode.HandleScriptMode(modeType, auditData);
-  
+}
+main();
