@@ -83,6 +83,40 @@ class MongoSchemaAudit {
     return refFields;
   }
 
+  async analyzeReferenceFields(dbName, collName) {
+  const db = this.client.db(dbName);
+  const collection = db.collection(collName);
+
+  // 1. Sample a document
+  const sample = await this.sampleDocument(dbName, collName);
+  if (!sample) {
+    return {
+      referenceFields: [],
+      distinctCounts: {}
+    };
+  }
+
+  // 2. Detect reference-like fields
+  const referenceFields = this.findReferenceFields(sample);
+
+  const distinctCounts = {};
+
+  // 3. Count distinct values for each reference field
+  for (const field of referenceFields) {
+    try {
+      const distinctValues = await collection.distinct(field);
+      distinctCounts[field] = distinctValues.length;
+    } catch (err) {
+      console.log(`Error getting distinct values for ${field}:`, err.message);
+      distinctCounts[field] = 0;
+    }
+  }
+
+  return {
+    referenceFields,
+    distinctCounts
+  };
+}
 
 
 
@@ -129,6 +163,26 @@ class MongoSchemaAudit {
   
 
 }
+
+async function testAnalyzeReferenceFields() {
+  const uri = process.argv[2];
+  const dbName = process.argv[3];
+  const collName = process.argv[4];
+
+  if (!uri || !dbName || !collName) {
+    console.log("Usage: node script.js <uri> <dbName> <collName>");
+    return;
+  }
+
+  const audit = new MongoSchemaAudit(uri);
+  await audit.connect();
+
+  const result = await audit.analyzeReferenceFields(dbName, collName);
+  console.log("Reference Field Analysis:", result);
+
+  await audit.disconnect();
+}
+
 
 async function testFindReferenceFields() {
   const uri = process.argv[2];
@@ -259,7 +313,8 @@ async function testSampleDocument() {
 // Uncomment this line when testing:
 //testSampleDocument();
 // main();
-testFindReferenceFields();
+//testFindReferenceFields();
+testAnalyzeReferenceFields();
 
 
 async function main() {
