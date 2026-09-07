@@ -57,10 +57,20 @@ class JsonAuditRunner {
 }
 
 class HtmlAuditRunner {
+
+  htmlBlock(obj) {
+   //swapping print to return to tril html output
+
+   //print("<pre>" + JSON.stringify(obj, null, 2) + "</pre>");
+
+
+
+    return "<pre>" + JSON.stringify(obj, null, 2) + "</pre>";}
+
   run(auditData) {
     // Note: Adjusted to use auditData if needed
     print("<html><head><title>Schema Audit HTML Report</title></head><body>");
-    jsonBlock(auditData);
+    this.htmlBlock(auditData);
     print("</body></html>");
   }
 }
@@ -100,5 +110,5 @@ const auditData = { status: "success", items: [1, 2, 3] };
 const handleMode = new SchemaAuditMode();
 
 // Call the Mode class
-handleMode.HandleScriptMode("html", auditData);
-     
+handleMode.HandleScriptMode(modeType, auditData);
+  
