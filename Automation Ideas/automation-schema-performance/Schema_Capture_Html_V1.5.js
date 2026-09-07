@@ -24,58 +24,54 @@ next steps:
 */
 
     //Called it schemasauditmode to trial out the ability to better filter out the output modes.
-    class SchemaAuditMode {
-
-        constructor() {
-            this.auditDataModes = {
-
+class SchemaAuditMode {
+    constructor() {
+        // Map mode strings to their respective class methods
+        this.auditDataModes = {
             shell: this.runShellMode.bind(this),
             json: this.runJsonMode.bind(this),
             html: this.runHtmlMode.bind(this)
-            };
-            
-        }
-
-        
-        // Use the Filter Mode Class
-        HandleScriptMode(auditDataModes) {
-
-            const auditMode = this.auditDataModes[MODE];
-            if (auditMode) {
-                auditMode();
-            } else {
-                print("Invalid MODE: " + MODE);
-                print("Allowed modes: shell, json, html");
-                console.error(`Unknown mode: ${auditMode}`);
-            }
-
-
-
-        }
-
-        runShellMode() {
-            section("Schema Audit (Shell Mode)");
-            jsonBlock(auditData);
-            section("Schema Audit Complete");
-        }
-
-        runjsonMode() {
-            section("JSON Output");
-            jsonBlock(auditData);
-            section("Schema Audit Complete");
-        }   
-        runHtmlMode() {
-            function htmlHeader(title) {
-                print("<html><head><title>" + title + "</title>");      
-        
-            }
-        }
-
-
+        };
     }
-     //Call the Mode class
-     const handleMode = new SchemaAuditMode();
-     handleMode.HandleScriptMode("json");
+
+    // Accept the chosen mode and the data to process
+    HandleScriptMode(mode, auditData) {
+        const auditMode = this.auditDataModes[mode];
+        
+        if (auditMode) {
+            // Pass the data down to the selected mode function
+            auditMode(auditData);
+        } else {
+            console.error(`Invalid MODE: ${mode}`);
+            console.log("Allowed modes: shell, json, html");
+        }
+    }
+
+    runShellMode(auditData) {
+        console.log("--- Schema Audit (Shell Mode) ---");
+        console.log(JSON.stringify(auditData, null, 2));
+        console.log("--- Schema Audit Complete ---");
+    }
+
+    runJsonMode(auditData) {
+        console.log("--- JSON Output ---");
+        console.log(JSON.stringify(auditData));
+        console.log("--- Schema Audit Complete ---");
+    }   
+
+    runHtmlMode(auditData) {
+        console.log("<html><head><title>Schema Audit (HTML Mode)</title></head><body>");
+        console.log(`<pre>${JSON.stringify(auditData, null, 2)}</pre>`);
+        console.log("</body></html>");
+    }
+}
+
+// Sample data to test the script
+const auditData = { status: "success", items: [1, 2, 3] };
+
+// Call the Mode class
+const handleMode = new SchemaAuditMode();
+handleMode.HandleScriptMode("html", auditData);
      
 
 
