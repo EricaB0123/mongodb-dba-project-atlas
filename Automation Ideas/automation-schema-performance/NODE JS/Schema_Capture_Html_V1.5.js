@@ -125,17 +125,14 @@ class MongoSchemaAudit {
     const collection = db.collection(collName);
 
     // 1. Sample a document
-    const sample = await collection.findOne();
+    const sample = await this.sampleDocument(dbName, collName);
     if (!sample) return {}; // empty collection
 
-    // 2. Find reference-like fields
-    const fields = Object.keys(sample);
-    const referenceFields = fields.filter(
-      f => f.toLowerCase().includes("id") && f !== "_id"
-    );
+    // 2. Use your unified reference-field detector
+    const referenceFields = this.findReferenceFields(sample);
 
+    // This was missing
     const results = {};
-
     // 3. Count total documents
     const totalDocs = await collection.countDocuments();
 
@@ -279,52 +276,6 @@ async runAudit() {
 
 }
 
-async function testAnalyzeReferenceFields() {
-  const uri = process.argv[2];
-  const dbName = process.argv[3];
-  const collName = process.argv[4];
-
-  if (!uri || !dbName || !collName) {
-    console.log("Usage: node script.js <uri> <dbName> <collName>");
-    return;
-  }
-
-  const audit = new MongoSchemaAudit(uri);
-  await audit.connect();
-
-  const result = await audit.analyzeReferenceFields(dbName, collName);
-  console.log("Reference Field Analysis:", result);
-
-  await audit.disconnect();
-}
-
-
-async function testFindReferenceFields() {
-  const uri = process.argv[2];
-  const dbName = process.argv[3];
-  const collName = process.argv[4];
-
-  if (!uri || !dbName || !collName) {
-    console.log("Usage: node script.js <uri> <dbName> <collName>");
-    return;
-  }
-
-  const audit = new MongoSchemaAudit(uri);
-  await audit.connect();
-
-  const sample = await audit.sampleDocument(dbName, collName);
-
-  if (!sample) {
-    console.log("Collection is empty or inaccessible.");
-  } else {
-    const refs = audit.findReferenceFields(sample);
-    console.log("Reference-like fields:", refs);
-  }
-
-  await audit.disconnect();
-}
-
-
 
 class ShellAuditRunner {
   run(auditData) {
@@ -405,93 +356,13 @@ class SchemaAuditMode {
 TEMPORARY TEST — sampleDocument
 Place this BEFORE main(), AFTER the class.
 ============================================================================ */
-async function testBuildRelationshipInsights() {
-  const uri = process.argv[2];
-  const dbName = process.argv[3];
-  const collName = process.argv[4];
 
-  if (!uri || !dbName || !collName) {
-    console.log("Usage: node script.js <uri> <dbName> <collName>");
-    return;
-  }
+//Moved testsampleDoc to seperate doc.
 
-  const audit = new MongoSchemaAudit(uri);
-  await audit.connect();
 
-  // Step 1: infer relationships for this single collection
-  const rel = await audit.inferRelationships(dbName, collName);
 
-  // Step 2: wrap in collection structure expected by buildRelationshipInsights
-  const relObj = { [collName]: rel };
 
-  // Step 3: generate insights
-  const insights = audit.buildRelationshipInsights(relObj);
 
-  console.log("Relationship Insights:", insights);
-
-  await audit.disconnect();
-}
-
-async function testSampleDocument() {
-  const uri = process.argv[2];
-  const dbName = process.argv[3];
-  const collName = process.argv[4];
-
-  if (!uri || !dbName || !collName) {
-    console.log("Usage: node script.js <uri> <dbName> <collName>");
-    return;
-  }
-
-  const audit = new MongoSchemaAudit(uri);
-  await audit.connect();
-
-  const sample = await audit.sampleDocument(dbName, collName);
-  console.log("Sample document:", sample);
-
-  await audit.disconnect();
-}
-
-async function testDetectDesignIssues() {
-  const uri = process.argv[2];
-  const dbName = process.argv[3];
-  const collName = process.argv[4];
-
-  if (!uri || !dbName || !collName) {
-    console.log("Usage: node script.js <uri> <dbName> <collName>");
-    return;
-  }
-
-  const audit = new MongoSchemaAudit(uri);
-  await audit.connect();
-
-  const sample = await audit.sampleDocument(dbName, collName);
-
-  if (!sample) {
-    console.log("Collection is empty or inaccessible.");
-  } else {
-    const issues = audit.detectDesignIssues(sample);
-    console.log("Design Issues:", issues);
-  }
-
-  await audit.disconnect();
-}
-
-async function testRunAudit() {
-  const uri = process.argv[2];
-
-  if (!uri) {
-    console.log("Usage: node script.js <uri>");
-    return;
-  }
-
-  const audit = new MongoSchemaAudit(uri);
-  await audit.connect();
-
-  const result = await audit.runAudit();
-  console.log("Full Audit Result:", JSON.stringify(result, null, 2));
-
-  await audit.disconnect();
-}
 
 
 // Uncomment this line when testing:
@@ -502,7 +373,7 @@ async function testRunAudit() {
 //testDetectDesignIssues();
 //testBuildRelationshipInsights();
 // main();
-testRunAudit();
+//testRunAudit();
 
 
 async function main() {
@@ -524,18 +395,11 @@ async function main() {
   const engine = new MongoSchemaAudit(uri);
   await engine.connect();
 
-  // TEMPORARY TEST OUTPUT (until runAudit is implemented)
-  const databases = await engine.getDatabases();
-
-  const auditData = {
-    scannedAt: new Date().toISOString(),
-    databases: databases
-  };
-
+  const auditData = await engine.runAudit();
   await engine.disconnect();
 
   const handleMode = new SchemaAuditMode();
   handleMode.HandleScriptMode(modeType, auditData);
 }
 
-//main();
+main();
