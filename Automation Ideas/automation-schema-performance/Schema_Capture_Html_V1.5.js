@@ -15,6 +15,7 @@ next steps:
 - at the moment it prints the output and suggestions 
 */
 
+const fs = require("fs");
 
 //Class Structure
 
@@ -29,9 +30,13 @@ next steps:
 
 class ShellAuditRunner {
   run(auditData) {
-    section("Schema Audit (Shell Mode)");
-    jsonBlock(auditData);
-    section("Schema Audit Complete");
+    //section("Schema Audit (Shell Mode)");
+    //jsonBlock(auditData);
+    //section("Schema Audit Complete");
+    console.log("=== Schema Audit (Shell Mode) ===");
+    //console.log(JSON.stringify(auditData, null, 2));
+    console.log(JSON.stringify(auditData, null, 2));
+    console.log("=== Schema Audit Complete ===");
   }
 }
 
@@ -43,16 +48,17 @@ class JsonAuditRunner {
   }
 
   section(title) {
-    print("");
-    print("======================================");
-    print(" " + title);
-    print("======================================");
-    print("");
+    console.log("");
+    console.log("======================================");
+    console.log(" " + title);
+    console.log("======================================");
+    console.log("");
   }  
   run(auditData) {
-    section("JSON Output");
-    jsonBlock(auditData);
-    section("Schema Audit Complete");
+    console.log("JSON Output");
+   // jsonBlock(auditData);
+    console.log(this.jsonBlock(auditData));
+    console.log("Schema Audit Complete");
   }
 }
 
@@ -62,18 +68,29 @@ class HtmlAuditRunner {
    //swapping print to return to tril html output
 
    //print("<pre>" + JSON.stringify(obj, null, 2) + "</pre>");
-
-
-
-    return "<pre>" + JSON.stringify(obj, null, 2) + "</pre>";}
-
+   return `<pre>${JSON.stringify(obj, null, 2)}</pre>`;
+//    return "<pre>" + JSON.stringify(obj, null, 2) + "</pre>";}
+  }
   run(auditData) {
     // Note: Adjusted to use auditData if needed
-    print("<html><head><title>Schema Audit HTML Report</title></head><body>");
-    this.htmlBlock(auditData);
-    print("</body></html>");
+   //console.log("<html><head><title>Schema Audit HTML Report</title></head><body>");
+    //console.log(this.htmlBlock(auditData));
+    //console.log("</body></html>");
+   
+    const html = `
+<html>
+<head>
+<title>Schema Audit HTML Report</title>
+</head>
+<body>
+${this.htmlBlock(auditData)}
+</body>
+</html>
+`;
+       fs.writeFileSync("schema_audit.html", html);
+    console.log("HTML report written to schema_audit.html");
   }
-}
+  }
 
 
 
@@ -95,8 +112,8 @@ class SchemaAuditMode {
         
         if (!auditMode) {
             const allowedModes = Object.keys(this.auditDataModes).join(", ");
-            print(`Allowed modes: ${allowedModes}`);
-            console.error(`Invalid MODE: ${mode}. Allowed modes: ${allowedModes}`);
+            console.log(`Allowed modes: ${allowedModes}`);
+            console.log(`Invalid MODE: ${mode}. Allowed modes: ${allowedModes}`);
             return;
         }
             // Pass the data down to the selected mode function
@@ -107,8 +124,11 @@ class SchemaAuditMode {
 
  // Sample data to test the script
 const auditData = { status: "success", items: [1, 2, 3] };
-const handleMode = new SchemaAuditMode();
+
+const modeType = process.argv[2];
+
 
 // Call the Mode class
+const handleMode = new SchemaAuditMode();
 handleMode.HandleScriptMode(modeType, auditData);
   
