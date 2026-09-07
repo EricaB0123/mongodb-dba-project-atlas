@@ -93,7 +93,7 @@ next steps:
         }   
     }
 
-
+/*
 // Do NOT override MODE if already set in shell
 MODE = MODE || "shell";
 
@@ -374,3 +374,6 @@ function runHtmlMode() {
 if (MODE === "shell") runShellMode();
 if (MODE === "json") runJsonMode();
 if (MODE === "html") runHtmlMode();
+
+
+*/
