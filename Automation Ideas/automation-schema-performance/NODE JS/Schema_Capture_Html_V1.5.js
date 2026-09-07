@@ -306,27 +306,59 @@ class JsonAuditRunner {
   }
 }
 
-class HtmlAuditRunner {
+class HtmlReportBuilder {
 
-  htmlBlock(obj) {
-    return `<pre>${JSON.stringify(obj, null, 2)}</pre>`;
+  constructor(outputFile = "schema_audit.html") {
+    this.outputFile = outputFile;
   }
 
-  run(auditData) {
-    const html = `
+  buildHtml(auditData) {
+    const jsonPretty = JSON.stringify(auditData, null, 2);
+
+    return `
 <html>
 <head>
-<title>Schema Audit HTML Report</title>
+<title>MongoDB Schema Audit Report</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  h1 { color: #333; }
+  pre {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+</style>
 </head>
 <body>
-${this.htmlBlock(auditData)}
+<h1>MongoDB Schema Audit Report</h1>
+<pre>${jsonPretty}</pre>
 </body>
 </html>
 `;
-    fs.writeFileSync("schema_audit.html", html);
-    console.log("HTML report written to schema_audit.html");
+  }
+
+  writeHtml(auditData) {
+    const html = this.buildHtml(auditData);
+    fs.writeFileSync(this.outputFile, html);
+    console.log(`HTML report written to ${this.outputFile}`);
   }
 }
+
+/* ============================================================================
+HTML Runner — thin wrapper around HtmlReportBuilder
+============================================================================ */
+
+class HtmlAuditRunner {
+  constructor() {
+    this.builder = new HtmlReportBuilder();
+  }
+
+  run(auditData) {
+    this.builder.writeHtml(auditData);
+  }
+}
+  
 
 
 class SchemaAuditMode {
