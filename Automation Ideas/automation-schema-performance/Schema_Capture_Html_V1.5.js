@@ -16,22 +16,6 @@ next steps:
 */
 
 
-// function structure
-
-function section(title) {
-  print("");
-  print("======================================");
-  print(" " + title);
-  print("======================================");
-  print("");
-}
-
-function jsonBlock(obj) {
-  print(JSON.stringify(obj, null, 2));
-}
-
-
-
 //Class Structure
 
 
@@ -52,6 +36,18 @@ class ShellAuditRunner {
 }
 
 class JsonAuditRunner {
+
+  jsonBlock(obj) {
+    return JSON.stringify(obj, null, 2);
+  }
+
+  section(title) {
+    print("");
+    print("======================================");
+    print(" " + title);
+    print("======================================");
+    print("");
+  }  
   run(auditData) {
     section("JSON Output");
     jsonBlock(auditData);
