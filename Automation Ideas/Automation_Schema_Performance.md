@@ -243,7 +243,16 @@ Currently working on the switch logic to show different format output. Ive attac
 
 ## Script Logic Explanation
 
-<img width="200" height="400" alt="image" src="https://github.com/user-attachments/assets/6fc6b2a2-0416-44c8-9d65-05bd083d6d2a" />
+[Schema Audit Tests](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/Automation%20Ideas/automation-schema-performance/NODE%20JS/TESTING%20Script%20Logic)
+
+[Screenshots of Updating scipt logic](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/docs/screenshots)
+
+I started with 2 Main Classes - Seperated the logic. I've ended up with classes for running the Audit, Filtering per databases and the different mode types.
+At the moment the script is run under node.js The next steps is to demonstrate in mongosh and maybe powershell to show the different outputs.
+
+Mongosh Testing:
+<img width="400" height="230" alt="image" src="https://github.com/user-attachments/assets/6fc6b2a2-0416-44c8-9d65-05bd083d6d2a" />
+
 
 
 
