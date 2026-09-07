@@ -70,6 +70,21 @@ class MongoSchemaAudit {
   }
 }
 
+  findReferenceFields(doc) {
+    const refFields = [];
+
+    for (const key of Object.keys(doc)) {
+      const lower = key.toLowerCase();
+      if (lower.includes("id") && key !== "_id") {
+        refFields.push(key);
+      }
+    }
+
+    return refFields;
+  }
+
+
+
 
   async inferRelationships(dbName, collName) {
     const db = this.client.db(dbName);
@@ -111,8 +126,35 @@ class MongoSchemaAudit {
   }
 
   
+  
 
 }
+
+async function testFindReferenceFields() {
+  const uri = process.argv[2];
+  const dbName = process.argv[3];
+  const collName = process.argv[4];
+
+  if (!uri || !dbName || !collName) {
+    console.log("Usage: node script.js <uri> <dbName> <collName>");
+    return;
+  }
+
+  const audit = new MongoSchemaAudit(uri);
+  await audit.connect();
+
+  const sample = await audit.sampleDocument(dbName, collName);
+
+  if (!sample) {
+    console.log("Collection is empty or inaccessible.");
+  } else {
+    const refs = audit.findReferenceFields(sample);
+    console.log("Reference-like fields:", refs);
+  }
+
+  await audit.disconnect();
+}
+
 
 
 class ShellAuditRunner {
@@ -215,7 +257,9 @@ async function testSampleDocument() {
 }
 
 // Uncomment this line when testing:
- testSampleDocument();
+//testSampleDocument();
+// main();
+testFindReferenceFields();
 
 
 async function main() {
