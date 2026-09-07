@@ -37,6 +37,7 @@ class ShellAuditRunner {
 
 class JsonAuditRunner {
 
+    // Added the Json function to the class to help with the output of the json data.
   jsonBlock(obj) {
     return JSON.stringify(obj, null, 2);
   }
