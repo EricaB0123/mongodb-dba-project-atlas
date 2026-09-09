@@ -312,9 +312,43 @@ class HtmlReportBuilder {
     this.outputFile = outputFile;
   }
 
-  buildHtml(auditData) {
-    const jsonPretty = JSON.stringify(auditData, null, 2);
+  // Attempt at making the html report more readable, seperating out the recommendations
 
+
+//method for pulling part the information. To be pulled from the main build method.
+buildHtmlWithRecommendations(auditData) {
+  //Put the objects into an arrary for it to then be grabbed for the html output
+  const dbNames = Object.keys(auditData.databases);
+  const firstDb = dbNames[0];
+
+  const dbReport = auditData.databases[firstDb];
+  const firstCollection = dbReport.collections[0];
+
+   const item = {
+    database: firstDb,
+    collection: firstCollection,
+    referenceFields: dbReport.referenceAnalysis[firstCollection].referenceFields,
+    distinctCounts: dbReport.referenceAnalysis[firstCollection].distinctCounts,
+    relationships: dbReport.relationships[firstCollection],
+    designIssues: dbReport.designIssues[firstCollection]
+  };
+
+  return auditData.map(item =>
+    `<p><strong>Database:</strong> ${item.database}</p>
+    <p><strong>Collection:</strong> ${item.collection}</p>
+    <p><strong>Reference Fields:</strong> ${item.referenceFields}</p>
+    <p><strong>Distinct Counts:</strong> ${JSON.stringify(item.distinctCounts)}</p>
+      <p><strong>Relationships:</strong> ${JSON.stringify(item.relationships)}</p>
+      <p><strong>Design Issues:</strong> ${item.designIssues}</p>
+      `
+    ).join('');
+
+}
+
+  // Builds a simple HTML report from the audit data
+  buildHtml(auditData) {
+   // const jsonPretty = JSON.stringify(auditData, null, 2);
+    const recommendations = this.buildHtmlWithRecommendations(auditData);
     return `
 <html>
 <head>
@@ -332,7 +366,8 @@ class HtmlReportBuilder {
 </head>
 <body>
 <h1>MongoDB Schema Audit Report</h1>
-<pre>${jsonPretty}</pre>
+<pre></pre>
+${recommendations}
 </body>
 </html>
 `;
@@ -344,6 +379,8 @@ class HtmlReportBuilder {
     console.log(`HTML report written to ${this.outputFile}`);
   }
 }
+
+
 
 /* ============================================================================
 HTML Runner — thin wrapper around HtmlReportBuilder
