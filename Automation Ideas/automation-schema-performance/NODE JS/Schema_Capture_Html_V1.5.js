@@ -177,9 +177,11 @@ class MongoSchemaAudit {
   }
 
   // Join-table pattern (N:M relational drift)
-  if (referenceFields.length === 2 && fieldCount === 2) {
-    issues.push("Looks like a join table (N:M) → relational drift.");
-  }
+const nonIdFields = Object.keys(doc).filter(k => k !== "_id");
+
+if (referenceFields.length === 2 && nonIdFields.length === 2) {
+  issues.push("Looks like a join table (N:M) → relational drift.");
+}
 
   return issues;
 }
@@ -219,6 +221,41 @@ class MongoSchemaAudit {
   return insights;
 }
 
+analyzeDocumentShape(doc) {
+  if (!doc) return {
+    fieldCount: 0,
+    arrayFields: [],
+    objectFields: [],
+    maxDepth: 0
+  };
+
+  const arrayFields = [];
+  const objectFields = [];
+
+  function getDepth(obj, depth = 1) {
+    let max = depth;
+    for (const key of Object.keys(obj)) {
+      const val = obj[key];
+      if (Array.isArray(val)) {
+        arrayFields.push(key);
+      } else if (typeof val === "object" && val !== null) {
+        objectFields.push(key);
+        max = Math.max(max, getDepth(val, depth + 1));
+      }
+    }
+    return max;
+  }
+
+  const maxDepth = getDepth(doc);
+
+  return {
+    fieldCount: Object.keys(doc).length,
+    arrayFields,
+    objectFields,
+    maxDepth
+  };
+}
+
 // Main Audit Function Pulling apart and rebuidling the functions withint e main class
 async runAudit() {
   const auditData = {
@@ -236,7 +273,9 @@ async runAudit() {
       referenceAnalysis: {},
       relationships: {},
       relationshipInsights: {},
-      designIssues: {}
+      designIssues: {},
+      sampleDocuments: {},
+      documentShape: {},
     };
 
     // 2. Get collections for this database
@@ -248,7 +287,12 @@ async runAudit() {
 
       // Sample document
       const sample = await this.sampleDocument(dbName, collName);
-
+      // If collection is empty, store empty object and skip complexity scoring
+if (!sample) {
+  dbReport.sampleDocuments[collName] = {};
+} else {
+  dbReport.sampleDocuments[collName] = sample;
+}
       // Reference field analysis
       const refAnalysis = await this.analyzeReferenceFields(dbName, collName);
       dbReport.referenceAnalysis[collName] = refAnalysis;
@@ -260,6 +304,11 @@ async runAudit() {
       // Design issues
       const issues = this.detectDesignIssues(sample);
       dbReport.designIssues[collName] = issues;
+    
+      const shape = this.analyzeDocumentShape(sample);
+      dbReport.documentShape[collName] = shape;
+
+    
     }
 
     // 4. Build relationship insights AFTER all relationships are collected
@@ -333,48 +382,75 @@ getSeverity(refFields, relationships, designIssues) {
   return "Low";
 }
 
-getFixSuggestion(designIssues) {
-  if (designIssues.some(i => i.includes("join table"))) {
-    return "Replace mapping collection with embedded array inside parent document.";
-  }
-  if (designIssues.some(i => i.includes("embedding recommended"))) {
-    return "Embed referenced fields directly inside the parent document.";
-  }
+getFixSuggestion(collName, refFields, relationships, designIssues) {
+  // Join-table → embed into the true parent, not this collection
+ 
+
+    if (designIssues.some(i => i.includes("join table"))) {
+  const parents = refFields.map(f => this.getParentFromReferenceField(f));
+  const primaryParent = parents[0]; // usually assetId
+
+  return `This collection behaves like a join-table linking ${parents.join(" and ")}. 
+Remove '${collName}' and embed '${parents.slice(1).join(", ")}' directly inside '${primaryParent}'. 
+This eliminates relational drift and improves read performance.`;
+}
+
+
   return "No fix required.";
 }
+
+getParentFromReferenceField(fieldName) {
+  return fieldName.toLowerCase().replace(/id$/, "");
+}
+
 
 //Added Function that will show which is parent or child. 
 getParentStatus(collName, dbReport) {
   const thisRefs = dbReport.referenceAnalysis[collName].referenceFields;
-  const sampleDoc = dbReport.sampleDocuments?.[collName] || {};
-  const fieldCount = Object.keys(sampleDoc).length;
 
-  let referencedBy = 0;
+  let referencedByOthers = false;
+  let referencedByJoinTable = false;
+
+  // Normalize collection name (remove plural, lowercase)
+  const normalizedColl = collName.toLowerCase().replace(/s$/, "");
 
   for (const otherColl of dbReport.collections) {
     const refFields = dbReport.referenceAnalysis[otherColl].referenceFields;
-    if (refFields.some(f => f.toLowerCase().includes(collName.toLowerCase()))) {
-      referencedBy++;
+
+    for (const f of refFields) {
+      // Normalize reference field (remove 'id', lowercase)
+      const normalizedField = f.toLowerCase().replace(/id$/, "");
+
+      // If other collection references this one
+      if (normalizedField === normalizedColl) {
+        referencedByOthers = true;
+
+        // Join-table detection: exactly 2 reference fields
+        if (dbReport.referenceAnalysis[otherColl].referenceFields.length === 2) {
+          referencedByJoinTable = true;
+        }
+      }
     }
   }
 
-  // Parent scoring
-  let parentScore = 0;
-  if (referencedBy > 1) parentScore += 2;
-  if (referencedBy === 1) parentScore += 1;
-  if (fieldCount > 5) parentScore += 1;
-  if (Object.values(sampleDoc).some(v => Array.isArray(v))) parentScore += 1;
-  if (Object.values(sampleDoc).some(v => typeof v === "object" && !Array.isArray(v))) parentScore += 1;
+  // Strong parent signal: referenced by join tables
+  if (referencedByJoinTable) return "Parent Document";
 
-  // Child scoring
-  let childScore = 0;
-  if (thisRefs.length > 0) childScore += 2;
-  if (referencedBy === 1) childScore += 1;
-  if (fieldCount < 5) childScore += 1;
-  if (!Object.values(sampleDoc).some(v => Array.isArray(v))) childScore += 1;
+  // Strong child signal: references others
+  if (thisRefs.length > 0) return "Child Document";
 
-  return parentScore > childScore ? "Parent Document" : "Child Document";
+  // Lookup tables default to child
+  return "Child Document";
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -448,9 +524,9 @@ let html = "";
       const designIssues = dbReport.designIssues[collName];
       const recommendation = this.getRecommendation(refFields, relationships, designIssues);
       const severity = this.getSeverity(refFields, relationships, designIssues);
-      const fixSuggestion = this.getFixSuggestion(designIssues);
+      const fixSuggestion = this.getFixSuggestion(collName, refFields, relationships, designIssues);
       const parentStatus = this.getParentStatus(collName, dbReport);
-
+      
       html += `
         <tr>
           <td>${collName}</td>

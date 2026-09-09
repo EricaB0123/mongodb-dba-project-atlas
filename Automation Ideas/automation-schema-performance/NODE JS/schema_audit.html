@@ -37,11 +37,13 @@
           <td>assetId, tagId</td>
           <td>{"assetId":2,"tagId":3}</td>
           <td>{"assetId":"Likely 1:N","tagId":"Likely 1:N"}</td>
-          <td>Small document using references → embedding recommended.</td>
+          <td>Small document using references → embedding recommended., Looks like a join table (N:M) → relational drift.</td>
           <!-- Added recommendations to the html report to make it more readable and easier to understand the output of the audit -->
-          <td>Embed referenced document (small document with references)</td>
-          <td>Medium</td>
-          <td>Embed referenced fields directly inside the parent document.</td>
+          <td>Embed related values inside parent document (join-table pattern detected)</td>
+          <td>High</td>
+          <td>This collection behaves like a join-table linking asset and tag. 
+Remove 'assetTagMap' and embed 'tag' directly inside 'asset'. 
+This eliminates relational drift and improves read performance.</td>
           <td>Child Document</td>
           </tr>
       
@@ -55,7 +57,7 @@
           <td>No action needed</td>
           <td>Low</td>
           <td>No fix required.</td>
-          <td>Child Document</td>
+          <td>Parent Document</td>
           </tr>
       
         <tr>
@@ -67,8 +69,8 @@
           <!-- Added recommendations to the html report to make it more readable and easier to understand the output of the audit -->
           <td>Embed referenced document (small document with references)</td>
           <td>Medium</td>
-          <td>Embed referenced fields directly inside the parent document.</td>
-          <td>Child Document</td>
+          <td>No fix required.</td>
+          <td>Parent Document</td>
           </tr>
       
         <tr>
@@ -102,11 +104,13 @@
           <td>assetId, categoryId</td>
           <td>{"assetId":2,"categoryId":2}</td>
           <td>{"assetId":"Likely 1:1","categoryId":"Likely 1:1"}</td>
-          <td>Small document using references → embedding recommended.</td>
+          <td>Small document using references → embedding recommended., Looks like a join table (N:M) → relational drift.</td>
           <!-- Added recommendations to the html report to make it more readable and easier to understand the output of the audit -->
-          <td>Embed referenced document (small document with references)</td>
-          <td>Medium</td>
-          <td>Embed referenced fields directly inside the parent document.</td>
+          <td>Embed related values inside parent document (join-table pattern detected)</td>
+          <td>High</td>
+          <td>This collection behaves like a join-table linking asset and category. 
+Remove 'assetCategoryMap' and embed 'category' directly inside 'asset'. 
+This eliminates relational drift and improves read performance.</td>
           <td>Child Document</td>
           </tr>
       </table><br/><h2>Database: test</h2>
