@@ -313,6 +313,37 @@ class HtmlReportBuilder {
     this.outputFile = outputFile;
   }
 
+  //Added recommendations to the html report to make it more readable and easier to understand the output of the audit.
+  getRecommendation(refFields, relationships, designIssues) {
+  if (designIssues.some(i => i.includes("join table"))) {
+    return "Embed related values inside parent document (join-table pattern detected)";
+  }
+  if (designIssues.some(i => i.includes("embedding recommended"))) {
+    return "Embed referenced document (small document with references)";
+  }
+  if (refFields.length === 0 && Object.keys(relationships).length === 0) {
+    return "No action needed";
+  }
+  return "Review embedding vs referencing";
+}
+
+getSeverity(refFields, relationships, designIssues) {
+  if (designIssues.some(i => i.includes("join table"))) return "High";
+  if (designIssues.some(i => i.includes("embedding recommended"))) return "Medium";
+  return "Low";
+}
+
+getFixSuggestion(designIssues) {
+  if (designIssues.some(i => i.includes("join table"))) {
+    return "Replace mapping collection with embedded array inside parent document.";
+  }
+  if (designIssues.some(i => i.includes("embedding recommended"))) {
+    return "Embed referenced fields directly inside the parent document.";
+  }
+  return "No fix required.";
+}
+
+
   // Attempt at making the html report more readable, seperating out the recommendations
 
 
@@ -362,6 +393,10 @@ let html = "";
         <th>Distinct Counts</th>
         <th>Relationships</th>
         <th>Design Issues</th>
+        <th>Recommendation</th>
+        <th>Severity</th>
+        <th>Fix Suggestion</th>
+
       </tr>
     `;
     for (const collName of dbReport.collections) {
@@ -378,7 +413,11 @@ let html = "";
           <td>${JSON.stringify(distinctCounts)}</td>
           <td>${JSON.stringify(relationships)}</td>
           <td>${designIssues.length ? designIssues.join(", ") : ""}</td>
-        </tr>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>${recommendation}</td>
+          <td>${severity}</td>
+          <td>${fixSuggestion}</td>
+          </tr>
       `;
     }
 
