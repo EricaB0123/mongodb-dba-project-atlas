@@ -12,6 +12,7 @@
   - [Pre Steps](#pre-steps)
   - [Running via mongosh](#running-via-mongosh)
   - [Testing the Data Load](#testing-data-loaded)
+  - [Report Output in HTML](#html-output)
 - [Compass / Terminal JSON Output](#compass--terminal-json-output)
 - [Improvements](#improvements)
 - [Script Logic Explanation](#script-logic-explanation)
@@ -85,7 +86,7 @@ l> mongosh "mongodb+srv://username@hiddenvalues.mongodb.net/" `
 <img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0d39bd6f-18ac-4e7c-9334-8c192b43ca91" />
 
 
-#### Html output - Using Node.js
+#### Html output
 
 ```
 PS \Automation Ideas\automation-schema-performance\NODE JS> node Schema_Capture.js html "mongodb+srv://username@hiddenvalues.mongodb.net/"
