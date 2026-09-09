@@ -345,14 +345,37 @@ getFixSuggestion(designIssues) {
 
 //Added Function that will show which is parent or child. 
 getParentStatus(collName, dbReport) {
-  // Domain entity rule: assets is always the parent
-  if (collName.toLowerCase() === "assets") {
-    return "Parent Document";
+  const thisRefs = dbReport.referenceAnalysis[collName].referenceFields;
+  const sampleDoc = dbReport.sampleDocuments?.[collName] || {};
+  const fieldCount = Object.keys(sampleDoc).length;
+
+  let referencedBy = 0;
+
+  for (const otherColl of dbReport.collections) {
+    const refFields = dbReport.referenceAnalysis[otherColl].referenceFields;
+    if (refFields.some(f => f.toLowerCase().includes(collName.toLowerCase()))) {
+      referencedBy++;
+    }
   }
 
-  // Everything else is a child (lookup tables, join tables, metadata)
-  return "Child Document";
+  // Parent scoring
+  let parentScore = 0;
+  if (referencedBy > 1) parentScore += 2;
+  if (referencedBy === 1) parentScore += 1;
+  if (fieldCount > 5) parentScore += 1;
+  if (Object.values(sampleDoc).some(v => Array.isArray(v))) parentScore += 1;
+  if (Object.values(sampleDoc).some(v => typeof v === "object" && !Array.isArray(v))) parentScore += 1;
+
+  // Child scoring
+  let childScore = 0;
+  if (thisRefs.length > 0) childScore += 2;
+  if (referencedBy === 1) childScore += 1;
+  if (fieldCount < 5) childScore += 1;
+  if (!Object.values(sampleDoc).some(v => Array.isArray(v))) childScore += 1;
+
+  return parentScore > childScore ? "Parent Document" : "Child Document";
 }
+
 
 
 
