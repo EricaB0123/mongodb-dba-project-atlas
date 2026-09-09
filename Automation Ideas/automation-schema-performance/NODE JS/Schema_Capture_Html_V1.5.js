@@ -417,7 +417,7 @@ let html = "";
           <td>${JSON.stringify(distinctCounts)}</td>
           <td>${JSON.stringify(relationships)}</td>
           <td>${designIssues.length ? designIssues.join(", ") : ""}</td>
-          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <!-- Added recommendations to the html report to make it more readable and easier to understand the output of the audit -->
           <td>${recommendation}</td>
           <td>${severity}</td>
           <td>${fixSuggestion}</td>

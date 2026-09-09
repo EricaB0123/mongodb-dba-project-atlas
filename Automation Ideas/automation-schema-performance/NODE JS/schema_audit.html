@@ -1,0 +1,204 @@
+
+<html>
+<head>
+<title>MongoDB Schema Audit Report</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  h1 { color: #333; }
+  pre {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+</style>
+</head>
+<body>
+<h1>MongoDB Schema Audit Report</h1>
+
+  <h2>Database: ingestionDB</h2>
+    <table border="1">
+      <tr>
+        <th>Collection</th>
+        <th>Reference Fields</th>
+        <th>Distinct Counts</th>
+        <th>Relationships</th>
+        <th>Design Issues</th>
+        <th>Recommendation</th>
+        <th>Severity</th>
+        <th>Fix Suggestion</th>
+
+      </tr>
+    
+        <tr>
+          <td>assetTagMap</td>
+          <td>assetId, tagId</td>
+          <td>{"assetId":2,"tagId":3}</td>
+          <td>{"assetId":"Likely 1:N","tagId":"Likely 1:N"}</td>
+          <td>Small document using references → embedding recommended.</td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>Embed referenced document (small document with references)</td>
+          <td>Medium</td>
+          <td>Embed referenced fields directly inside the parent document.</td>
+          </tr>
+      
+        <tr>
+          <td>tags</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>assets</td>
+          <td>metadataId</td>
+          <td>{"metadataId":2}</td>
+          <td>{"metadataId":"Likely 1:1"}</td>
+          <td>Small document using references → embedding recommended.</td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>Embed referenced document (small document with references)</td>
+          <td>Medium</td>
+          <td>Embed referenced fields directly inside the parent document.</td>
+          </tr>
+      
+        <tr>
+          <td>categories</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>metadata</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>assetCategoryMap</td>
+          <td>assetId, categoryId</td>
+          <td>{"assetId":2,"categoryId":2}</td>
+          <td>{"assetId":"Likely 1:1","categoryId":"Likely 1:1"}</td>
+          <td>Small document using references → embedding recommended.</td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>Embed referenced document (small document with references)</td>
+          <td>Medium</td>
+          <td>Embed referenced fields directly inside the parent document.</td>
+          </tr>
+      </table><br/><h2>Database: test</h2>
+    <table border="1">
+      <tr>
+        <th>Collection</th>
+        <th>Reference Fields</th>
+        <th>Distinct Counts</th>
+        <th>Relationships</th>
+        <th>Design Issues</th>
+        <th>Recommendation</th>
+        <th>Severity</th>
+        <th>Fix Suggestion</th>
+
+      </tr>
+    
+        <tr>
+          <td>assets</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>batchruns</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>metadatas</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>ingestQueue</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>metadata</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>ingestqueues</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      
+        <tr>
+          <td>batchRuns</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+          //Added recommendations to the html report to make it more readable and easier to understand the output of the audit
+          <td>No action needed</td>
+          <td>Low</td>
+          <td>No fix required.</td>
+          </tr>
+      </table><br/>
+
+</body>
+</html>
