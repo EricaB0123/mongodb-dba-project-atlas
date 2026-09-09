@@ -360,13 +360,25 @@ buildHtmlWithRecommendations(auditData) {
 
   }
 }
-  return items.map(item => `
-    <td><strong>Database:</strong> ${item.database}</td>
-    <td><strong>Collection:</strong> ${item.collection}</td>
-    <td><strong>Reference Fields:</strong> ${item.referenceFields.join(", ")}</td>
-    <td><strong>Distinct Counts:</strong> ${JSON.stringify(item.distinctCounts)}</td>
-    <td><strong>Relationships:</strong> ${JSON.stringify(item.relationships)}</td>
-    <td><strong>Design Issues:</strong> ${item.designIssues.join(", ")}</td>
+    return items.map(item => `
+    <h2>${item.database}</h2>
+    <table border="1">
+      <tr>
+        <th>Collection</th>
+        <th>Reference Fields</th>
+        <th>Distinct Counts</th>
+        <th>Relationships</th>
+        <th>Design Issues</th>
+      </tr>
+      <tr>
+        <td>${item.collection}</td>
+        <td>${item.referenceFields.join(", ")}</td>
+        <td>${JSON.stringify(item.distinctCounts)}</td>
+        <td>${JSON.stringify(item.relationships)}</td>
+        <td>${item.designIssues.join(", ")}</td>
+      </tr>
+    </table>
+    <br/>
   `).join('');
 
 }
@@ -392,17 +404,9 @@ buildHtmlWithRecommendations(auditData) {
 </head>
 <body>
 <h1>MongoDB Schema Audit Report</h1>
-<table border="1">
-  <tr>
-    <th>Database</th>
-    <th>Collection</th>
-    <th>Reference Fields</th>
-    <th>Distinct Counts</th>
-    <th>Relationships</th>
-    <th>Design Issues</th>
-  </tr>
+
   ${recommendations}
-</table>
+
 </body>
 </html>
 `;
