@@ -333,15 +333,14 @@ buildHtmlWithRecommendations(auditData) {
     designIssues: dbReport.designIssues[firstCollection]
   };
 
-  return auditData.map(item =>
-    `<p><strong>Database:</strong> ${item.database}</p>
+  return `
+    <p><strong>Database:</strong> ${item.database}</p>
     <p><strong>Collection:</strong> ${item.collection}</p>
-    <p><strong>Reference Fields:</strong> ${item.referenceFields}</p>
+    <p><strong>Reference Fields:</strong> ${item.referenceFields.join(", ")}</p>
     <p><strong>Distinct Counts:</strong> ${JSON.stringify(item.distinctCounts)}</p>
-      <p><strong>Relationships:</strong> ${JSON.stringify(item.relationships)}</p>
-      <p><strong>Design Issues:</strong> ${item.designIssues}</p>
-      `
-    ).join('');
+    <p><strong>Relationships:</strong> ${JSON.stringify(item.relationships)}</p>
+    <p><strong>Design Issues:</strong> ${item.designIssues.join(", ")}</p>
+  `;
 
 }
 
