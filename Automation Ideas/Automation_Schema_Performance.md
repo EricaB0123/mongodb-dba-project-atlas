@@ -1,5 +1,22 @@
 ### Schema Audit Script
 
+- [What the Script Does](#what-the-script-does)
+  - [Relationship Detection](#relationship-detection)
+  - [Embedded Array Analysis](#embedded-array-analysis)
+  - [High-Cardinality Field Checks](#high-cardinality-field-checks)
+  - [Oversized Document Detection](#oversized-document-detection)
+  - [Embedding vs Referencing Recommendations](#embedding-vs-referencing-recommendations)
+- [When to Use This Script](#when-to-use-this-script)
+- [Demonstration](#demonstration)
+  - [Example 1: Over-normalized Collection](#example-1-a-collection-that-has-too-many-references)
+  - [Pre Steps](#pre-steps)
+  - [Running via mongosh](#running-via-mongosh)
+  - [Testing the Data Load](#testing-data-loaded)
+  - [Report Output in HTML](#html-output)
+- [Compass / Terminal JSON Output](#compass--terminal-json-output)
+- [Improvements](#improvements)
+- [Script Logic Explanation](#script-logic-explanation)
+
 #### Overview
 
 This script is designed to give me a practical, data‑driven view of how collections relate to each other based on what’s actually stored in the database. It analyses document structures and reference IDs to work out whether a relationship behaves like 1:1, 1:N, or N:M, and flags any embedded arrays that have grown past 100 items.
@@ -29,33 +46,16 @@ Suggests whether embedding or referencing is more appropriate based on observed 
 - As part of routine DBA health checks
 - When reviewing embedding vs referencing decisions.
 
-## Table of Contents
-- [Schema Audit Script](#schema-audit-script)
-- [Overview](#overview)
-- [What the Script Does](#what-the-script-does)
-  - [Relationship Detection](#relationship-detection)
-  - [Embedded Array Analysis](#embedded-array-analysis)
-  - [High-Cardinality Field Checks](#high-cardinality-field-checks)
-  - [Oversized Document Detection](#oversized-document-detection)
-  - [Embedding vs Referencing Recommendations](#embedding-vs-referencing-recommendations)
-- [When to Use This Script](#when-to-use-this-script)
-- [Demonstration](#demonstration)
-  - [Test Database Setup](#test-database-setup)
-  - [Example 1: Over-normalized Collection](#example-1-over-normalized-collection)
-  - [Pre Steps](#pre-steps)
-  - [Running via mongosh](#running-via-mongosh)
-  - [Testing the Data Load](#testing-the-data-load)
-- [Compass / Terminal JSON Output](#compass--terminal-json-output)
-- [Improvements](#improvements)
-- [Script Logic Explanation](#script-logic-explanation)
+
+
 
 
 ## Demonstration 
 
 Using the Test database setup that contains 'assets, metadata, batchRuns, and lifecycle collections'. Below is Demonstrating the development and testing of the script.
 
-### Example 1 A collection that has too many references (over‑normalized, too relational).
-
+### Example 1 A collection that has too many references.
+#### (over‑normalized, too relational)
 #### Pre steps:
 
 1) Made sure i had a test database setup.
@@ -63,18 +63,9 @@ Using the Test database setup that contains 'assets, metadata, batchRuns, and li
 
 I created the loads as a script which was then uploaded it to Compass. [Database Setup and Load Test](https://github.com/EricaB0123/mongodb-dba-project-atlas-bare-metal/blob/main/Automation%20Ideas/automation-schema-performance/Database-Setup-and-Load-Test.js)
 
-##### Running via the mongosh shell
+#### Running via mongosh
 
 <img width="577" height="288" alt="image" src="https://github.com/user-attachments/assets/9a27e7ee-e019-45e6-bdf6-0b5372edec15" />
-
-##### Testing the data was loaded
-
-<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/40c34078-9504-4e67-8ab1-b1b5501cd4b7" />
-
-
-#### Running the script
-
-<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0d39bd6f-18ac-4e7c-9334-8c192b43ca91" />
 
 #### Json output
 
@@ -83,20 +74,34 @@ l> mongosh "mongodb+srv://username@hiddenvalues.mongodb.net/" `
 >>   --quiet `                                                         
 >>   --file ".\Automation Ideas\automation-schema-performance\automation-schema-performance.js" |                        
 >>   Out-File ".\schema-audit.json" -Encoding utf8
-
-
 ```
+
+#### Testing data loaded
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/40c34078-9504-4e67-8ab1-b1b5501cd4b7" />
+
+
+#### Running the script
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0d39bd6f-18ac-4e7c-9334-8c192b43ca91" />
+
 
 #### Html output
 
 ```
-Atlas ingestionDB> load("Automation Ideas/automation-schema-performance/automation-schema-performance.js")
-
-HTML report generated: audit-report.html
-
-true
+PS \Automation Ideas\automation-schema-performance\NODE JS> node Schema_Capture.js html "mongodb+srv://username@hiddenvalues.mongodb.net/"
+>> 
+HTML report written to schema_audit.html
 
 ```
+
+<img width="1862" height="417" alt="image" src="https://github.com/user-attachments/assets/26e57d66-0076-40e4-95e2-3945b1e56241" />
+
+
+When running the report - i intentiinaly excluded the internal databases. To show the 2 databases in focus.  
+
+In the output we can see that the collection'AssetTagMap'	assetId, tagId	{"assetId":2,"tagId":3}	{"assetId":"Likely 1:N","tagId":"Likely 1:N"}. It has the problem "Small document using references → embedding recommended".
+I need to add more context to the script on recommended next actions. The basic idea is that the output is suggesting that instead of keeping a seperate mapping collection that requires level joins. That maybe embedding the tags inside 'asset' could improve performance.  It then prevents the database design from going towards the relational design and more suitable for nosql 
 
 ### Report output and Automation Suggestions
 
@@ -239,19 +244,51 @@ Collections:
 
 [Current Script State](https://github.com/EricaB0123/mongodb-dba-project-atlas-bare-metal)
 
-Currently working on the switch logic to show different format output. Ive attached 2 scripts for now. eventually into one less confusing output. main idea is to show the format and suggestions and it can be adjusted. for lijes of monitoring or further dba context.
+Currently working on the switch logic to show different format output. Ive attached 2 scripts for now. eventually into one less confusing output. main idea is to show the format and suggestions and it can be adjusted. for likes of monitoring or further dba context.
+
+At the moment the script put a single description of possible design issues, but no example or further context. Having an example suggestion could then be further added for the script to make these changes.
+
+For example:
+```
+Collection	Reference Fields	Distinct Counts	Relationships	Design Issues
+assetTagMap	assetId, tagId	{"assetId":2,"tagId":3}	{"assetId":"Likely 1:N","tagId":"Likely 1:N"}	Small document using references → embedding recommended
+```
+Would make more sense to also include:
+```
+Separate Collection (References)Embedded Approach (Recommended)
+assets collection: { "_id": 2, "name": "Laptop" }
+assetTagMap collection: { "assetId": 2, "tagId": 3 }assets collection:{  "_id": 2,  "name": "Laptop",  "tags": [3, 4, 5] }
+```
+Suggested way the collection could be updated.
 
 ## Script Logic Explanation
 
 [Schema Audit Tests](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/Automation%20Ideas/automation-schema-performance/NODE%20JS/TESTING%20Script%20Logic)
 
-[Screenshots of Updating scipt logic](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/docs/screenshots)
-
 I started with 2 Main Classes - Seperated the logic. I've ended up with classes for running the Audit, Filtering per databases and the different mode types.
 At the moment the script is run under node.js The next steps is to demonstrate in mongosh and maybe powershell to show the different outputs.
 
+Adding a function similar to 'buildRelationshipInsights', allows Adding more context for recommendations.  
+
+For example: 
+
+```
+  getRecommendation(refFields, relationships, designIssues) {
+
+  etc
+
+  return ;
+}
+
+
+```
+
 Mongosh Testing:
-<img width="400" height="230" alt="image" src="https://github.com/user-attachments/assets/6fc6b2a2-0416-44c8-9d65-05bd083d6d2a" />
+[Screenshots of Updating scipt logic](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/docs/screenshots)
+
+
+
+
 
 
 
