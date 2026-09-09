@@ -1,5 +1,21 @@
 ### Schema Audit Script
 
+- [What the Script Does](#what-the-script-does)
+  - [Relationship Detection](#relationship-detection)
+  - [Embedded Array Analysis](#embedded-array-analysis)
+  - [High-Cardinality Field Checks](#high-cardinality-field-checks)
+  - [Oversized Document Detection](#oversized-document-detection)
+  - [Embedding vs Referencing Recommendations](#embedding-vs-referencing-recommendations)
+- [When to Use This Script](#when-to-use-this-script)
+- [Demonstration](#demonstration)
+  - [Example 1: Over-normalized Collection](#example-1-a-collection-that-has-too-many-references)
+  - [Pre Steps](#pre-steps)
+  - [Running via mongosh](#running-via-mongosh)
+  - [Testing the Data Load](#testing-data-loaded)
+- [Compass / Terminal JSON Output](#compass--terminal-json-output)
+- [Improvements](#improvements)
+- [Script Logic Explanation](#script-logic-explanation)
+
 #### Overview
 
 This script is designed to give me a practical, data‑driven view of how collections relate to each other based on what’s actually stored in the database. It analyses document structures and reference IDs to work out whether a relationship behaves like 1:1, 1:N, or N:M, and flags any embedded arrays that have grown past 100 items.
@@ -29,25 +45,8 @@ Suggests whether embedding or referencing is more appropriate based on observed 
 - As part of routine DBA health checks
 - When reviewing embedding vs referencing decisions.
 
-## Table of Contents
-- [Schema Audit Script](#schema-audit-script)
-- [Overview](#overview)
-- [What the Script Does](#what-the-script-does)
-  - [Relationship Detection](#relationship-detection)
-  - [Embedded Array Analysis](#embedded-array-analysis)
-  - [High-Cardinality Field Checks](#high-cardinality-field-checks)
-  - [Oversized Document Detection](#oversized-document-detection)
-  - [Embedding vs Referencing Recommendations](#Example-1-A-collection-that-has-too-many-references)
-- [When to Use This Script](#when-to-use-this-script)
-- [Demonstration](#demonstration)
-  - [Test Database Setup](#test-database-setup)
-  - [Example 1: Over-normalized Collection](#example-1-over-normalized-collection)
-  - [Pre Steps](#pre-steps)
-  - [Running via mongosh](#running-via-mongosh)
-  - [Testing the Data Load](#testing-the-data-load)
-- [Compass / Terminal JSON Output](#compass--terminal-json-output)
-- [Improvements](#improvements)
-- [Script Logic Explanation](#script-logic-explanation)
+
+
 
 
 ## Demonstration 
@@ -63,18 +62,9 @@ Using the Test database setup that contains 'assets, metadata, batchRuns, and li
 
 I created the loads as a script which was then uploaded it to Compass. [Database Setup and Load Test](https://github.com/EricaB0123/mongodb-dba-project-atlas-bare-metal/blob/main/Automation%20Ideas/automation-schema-performance/Database-Setup-and-Load-Test.js)
 
-##### Running via the mongosh shell
+#### Running via mongosh
 
 <img width="577" height="288" alt="image" src="https://github.com/user-attachments/assets/9a27e7ee-e019-45e6-bdf6-0b5372edec15" />
-
-##### Testing the data was loaded
-
-<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/40c34078-9504-4e67-8ab1-b1b5501cd4b7" />
-
-
-#### Running the script
-
-<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0d39bd6f-18ac-4e7c-9334-8c192b43ca91" />
 
 #### Json output
 
@@ -83,25 +73,34 @@ l> mongosh "mongodb+srv://username@hiddenvalues.mongodb.net/" `
 >>   --quiet `                                                         
 >>   --file ".\Automation Ideas\automation-schema-performance\automation-schema-performance.js" |                        
 >>   Out-File ".\schema-audit.json" -Encoding utf8
-
-
 ```
+
+#### Testing data loaded
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/40c34078-9504-4e67-8ab1-b1b5501cd4b7" />
+
+
+#### Running the script
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0d39bd6f-18ac-4e7c-9334-8c192b43ca91" />
+
 
 #### Html output - Using Node.js
 
 ```
-PS \Automation Ideas\automation-schema-performance\NODE JS> node Schema_Capture.js html "mongodb+srv://srvDatabaseAdministrator:%2557Respect@cluster0.c1osr3x.mongodb.net/"
+PS \Automation Ideas\automation-schema-performance\NODE JS> node Schema_Capture.js html "mongodb+srv://username@hiddenvalues.mongodb.net/"
 >> 
 HTML report written to schema_audit.html
 
 ```
 
-<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/035ad3d4-65eb-49f4-9f64-2cf7ee39754d" />
+<img width="1862" height="417" alt="image" src="https://github.com/user-attachments/assets/26e57d66-0076-40e4-95e2-3945b1e56241" />
+
 
 When running the report - i intentiinaly excluded the internal databases. To show the 2 databases in focus.  
 
 In the output we can see that the collection'AssetTagMap'	assetId, tagId	{"assetId":2,"tagId":3}	{"assetId":"Likely 1:N","tagId":"Likely 1:N"}. It has the problem "Small document using references → embedding recommended".
-I need to add more context to the script on recommended next actions. The basic idea is that the output is suggesting that instead of keeping a seperate mapping collection that requires level joins. That maybe embedding the tags inside 'asset' could improve performance. 
+I need to add more context to the script on recommended next actions. The basic idea is that the output is suggesting that instead of keeping a seperate mapping collection that requires level joins. That maybe embedding the tags inside 'asset' could improve performance.  It then prevents the database design from going towards the relational design and more suitable for nosql 
 
 ### Report output and Automation Suggestions
 
