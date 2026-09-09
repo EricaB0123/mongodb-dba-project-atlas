@@ -1,0 +1,126 @@
+
+<html>
+<head>
+<title>MongoDB Schema Audit Report</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  h1 { color: #333; }
+  pre {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+</style>
+</head>
+<body>
+<h1>MongoDB Schema Audit Report</h1>
+<pre></pre>
+
+    <p><strong>Database:</strong> db</p>
+    <p><strong>Collection:</strong> items</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> ingestionDB</p>
+    <p><strong>Collection:</strong> assetTagMap</p>
+    <p><strong>Reference Fields:</strong> assetId, tagId</p>
+    <p><strong>Distinct Counts:</strong> {"assetId":2,"tagId":3}</p>
+    <p><strong>Relationships:</strong> {"assetId":"Likely 1:N","tagId":"Likely 1:N"}</p>
+    <p><strong>Design Issues:</strong> Small document using references → embedding recommended.</p>
+  
+    <p><strong>Database:</strong> ingestionDB</p>
+    <p><strong>Collection:</strong> tags</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> ingestionDB</p>
+    <p><strong>Collection:</strong> assets</p>
+    <p><strong>Reference Fields:</strong> metadataId</p>
+    <p><strong>Distinct Counts:</strong> {"metadataId":2}</p>
+    <p><strong>Relationships:</strong> {"metadataId":"Likely 1:1"}</p>
+    <p><strong>Design Issues:</strong> Small document using references → embedding recommended.</p>
+  
+    <p><strong>Database:</strong> ingestionDB</p>
+    <p><strong>Collection:</strong> categories</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> ingestionDB</p>
+    <p><strong>Collection:</strong> metadata</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> ingestionDB</p>
+    <p><strong>Collection:</strong> assetCategoryMap</p>
+    <p><strong>Reference Fields:</strong> assetId, categoryId</p>
+    <p><strong>Distinct Counts:</strong> {"assetId":2,"categoryId":2}</p>
+    <p><strong>Relationships:</strong> {"assetId":"Likely 1:1","categoryId":"Likely 1:1"}</p>
+    <p><strong>Design Issues:</strong> Small document using references → embedding recommended.</p>
+  
+    <p><strong>Database:</strong> test</p>
+    <p><strong>Collection:</strong> assets</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> test</p>
+    <p><strong>Collection:</strong> batchruns</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> test</p>
+    <p><strong>Collection:</strong> metadatas</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> test</p>
+    <p><strong>Collection:</strong> ingestQueue</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> test</p>
+    <p><strong>Collection:</strong> metadata</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> test</p>
+    <p><strong>Collection:</strong> ingestqueues</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> test</p>
+    <p><strong>Collection:</strong> batchRuns</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+    <p><strong>Database:</strong> local</p>
+    <p><strong>Collection:</strong> oplog.rs</p>
+    <p><strong>Reference Fields:</strong> </p>
+    <p><strong>Distinct Counts:</strong> {}</p>
+    <p><strong>Relationships:</strong> {}</p>
+    <p><strong>Design Issues:</strong> </p>
+  
+</body>
+</html>
