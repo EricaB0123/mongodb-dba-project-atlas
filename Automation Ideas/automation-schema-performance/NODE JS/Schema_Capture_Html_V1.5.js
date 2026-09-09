@@ -405,6 +405,10 @@ let html = "";
       const distinctCounts = dbReport.referenceAnalysis[collName].distinctCounts;
       const relationships = dbReport.relationships[collName];
       const designIssues = dbReport.designIssues[collName];
+      const recommendation = this.getRecommendation(refFields, relationships, designIssues);
+      const severity = this.getSeverity(refFields, relationships, designIssues);
+      const fixSuggestion = this.getFixSuggestion(designIssues);
+
 
       html += `
         <tr>
