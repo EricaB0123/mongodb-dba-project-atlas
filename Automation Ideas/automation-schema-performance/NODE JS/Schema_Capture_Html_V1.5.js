@@ -345,15 +345,37 @@ getFixSuggestion(designIssues) {
 
 //Added Function that will show which is parent or child. 
 getParentStatus(collName, dbReport) {
-  // If this collection's _id is referenced by others → it's a parent
+  const thisRefs = dbReport.referenceAnalysis[collName].referenceFields;
+
+  let referencedByJoinTables = false;
+
   for (const otherColl of dbReport.collections) {
     const refFields = dbReport.referenceAnalysis[otherColl].referenceFields;
-    if (refFields.some(f => f.toLowerCase().includes(collName.toLowerCase()))) {
-      return "Parent Document";
+
+    // If a join-table references this collection → this is parent
+    if (
+      otherColl.toLowerCase().includes("map") &&
+      refFields.some(f => f.toLowerCase().includes(collName.toLowerCase()))
+    ) {
+      referencedByJoinTables = true;
     }
   }
+
+  // If referenced by join tables AND does not reference others → parent
+  if (referencedByJoinTables && thisRefs.length === 0) {
+    return "Parent Document";
+  }
+
+  // If this collection references others → child
+  if (thisRefs.length > 0) {
+    return "Child Document";
+  }
+
+  // Lookup tables default to child
   return "Child Document";
 }
+
+
 
 
 
