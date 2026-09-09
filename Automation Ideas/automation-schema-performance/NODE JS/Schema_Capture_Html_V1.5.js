@@ -332,22 +332,23 @@ buildHtmlWithRecommendations(auditData) {
     // Loop all collections inside each database
     for (const collName of dbReport.collections) {
    items.push = {
-    database: firstDb,
-    collection: firstCollection,
-    referenceFields: dbReport.referenceAnalysis[firstCollection].referenceFields,
-    distinctCounts: dbReport.referenceAnalysis[firstCollection].distinctCounts,
-    relationships: dbReport.relationships[firstCollection],
-    designIssues: dbReport.designIssues[firstCollection]
+    database: dbName,
+    collection: collName,
+    referenceFields: dbReport.referenceAnalysis[collName].referenceFields,
+    distinctCounts: dbReport.referenceAnalysis[collName].distinctCounts,
+    relationships: dbReport.relationships[collName],
+    designIssues: dbReport.designIssues[collName]
   };
     }
-  return `
+  }
+  return items.map(item => `
     <p><strong>Database:</strong> ${item.database}</p>
     <p><strong>Collection:</strong> ${item.collection}</p>
     <p><strong>Reference Fields:</strong> ${item.referenceFields.join(", ")}</p>
     <p><strong>Distinct Counts:</strong> ${JSON.stringify(item.distinctCounts)}</p>
     <p><strong>Relationships:</strong> ${JSON.stringify(item.relationships)}</p>
     <p><strong>Design Issues:</strong> ${item.designIssues.join(", ")}</p>
-  `;
+  `).join('');
 
 }
 
