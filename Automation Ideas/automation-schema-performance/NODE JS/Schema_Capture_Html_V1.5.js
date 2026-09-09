@@ -343,6 +343,19 @@ getFixSuggestion(designIssues) {
   return "No fix required.";
 }
 
+//Added Function that will show which is parent or child. 
+getParentStatus(collName, dbReport) {
+  // If this collection's _id is referenced by others → it's a parent
+  for (const otherColl of dbReport.collections) {
+    const refFields = dbReport.referenceAnalysis[otherColl].referenceFields;
+    if (refFields.some(f => f.toLowerCase().includes(collName.toLowerCase()))) {
+      return "Parent Document";
+    }
+  }
+  return "Child Document";
+}
+
+
 
   // Attempt at making the html report more readable, seperating out the recommendations
 
@@ -396,6 +409,8 @@ let html = "";
         <th>Recommendation</th>
         <th>Severity</th>
         <th>Fix Suggestion</th>
+        <th>Parent/Child</th>
+
 
       </tr>
     `;
@@ -408,7 +423,7 @@ let html = "";
       const recommendation = this.getRecommendation(refFields, relationships, designIssues);
       const severity = this.getSeverity(refFields, relationships, designIssues);
       const fixSuggestion = this.getFixSuggestion(designIssues);
-
+      const parentStatus = this.getParentStatus(collName, dbReport);
 
       html += `
         <tr>
@@ -421,6 +436,7 @@ let html = "";
           <td>${recommendation}</td>
           <td>${severity}</td>
           <td>${fixSuggestion}</td>
+          <td>${parentStatus}</td>
           </tr>
       `;
     }
