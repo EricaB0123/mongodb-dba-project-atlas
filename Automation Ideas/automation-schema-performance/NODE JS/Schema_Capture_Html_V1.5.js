@@ -319,12 +319,33 @@ class HtmlReportBuilder {
 buildHtmlWithRecommendations(auditData) {
   //Put the objects into an arrary for it to then be grabbed for the html output
   
-  /*const dbNames = Object.keys(auditData.databases);
+  /*
+  Removed the following lines as they were to test the implementation with one db:
+  const dbNames = Object.keys(auditData.databases);
   const firstDb = dbNames[0];
 
   const dbReport = auditData.databases[firstDb];
   const firstCollection = dbReport.collections[0];
  */
+
+/*
+  The JSON structure is as follows:
+  {
+    "databases": {  
+        "dbName": {
+            "collections": ["coll1", "coll2"],
+            "referenceAnalysis": {  
+            "relationships": {
+            "designIssues": {
+  }
+
+  IN order for the html to be built, we need to loop through each database, then each collection, and extract the relevant information for the report.
+  
+
+
+
+
+*/
  const items = [];
 // Loop all databases
   for (const [dbName, dbReport] of Object.entries(auditData.databases)) {
