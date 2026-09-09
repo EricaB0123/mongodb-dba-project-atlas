@@ -343,25 +343,17 @@ buildHtmlWithRecommendations(auditData) {
   
 
 */
- const items = [];
+// const items = [];
+
+let html = "";
 // Loop all databases
   for (const [dbName, dbReport] of Object.entries(auditData.databases)) {
 
     // Loop all collections inside each database
-    for (const collName of dbReport.collections) {
-    items.push({
-      database: dbName,
-      collection: collName,
-      referenceFields: dbReport.referenceAnalysis[collName].referenceFields,
-      distinctCounts: dbReport.referenceAnalysis[collName].distinctCounts,
-      relationships: dbReport.relationships[collName],
-      designIssues: dbReport.designIssues[collName]
-    });
-
-  }
-}
-    return items.map(item => `
-    <h2>${item.database}</h2>
+   html += `<h2>Database: ${dbName}</h2>`;
+   
+    //for (const collName of dbReport.collections) {
+    html += `
     <table border="1">
       <tr>
         <th>Collection</th>
@@ -370,17 +362,29 @@ buildHtmlWithRecommendations(auditData) {
         <th>Relationships</th>
         <th>Design Issues</th>
       </tr>
-      <tr>
-        <td>${item.collection}</td>
-        <td>${item.referenceFields.join(", ")}</td>
-        <td>${JSON.stringify(item.distinctCounts)}</td>
-        <td>${JSON.stringify(item.relationships)}</td>
-        <td>${item.designIssues.join(", ")}</td>
-      </tr>
-    </table>
-    <br/>
-  `).join('');
+    `;
+    for (const collName of dbReport.collections) {
 
+      const refFields = dbReport.referenceAnalysis[collName].referenceFields;
+      const distinctCounts = dbReport.referenceAnalysis[collName].distinctCounts;
+      const relationships = dbReport.relationships[collName];
+      const designIssues = dbReport.designIssues[collName];
+
+      html += `
+        <tr>
+          <td>${collName}</td>
+          <td>${refFields.length ? refFields.join(", ") : ""}</td>
+          <td>${JSON.stringify(distinctCounts)}</td>
+          <td>${JSON.stringify(relationships)}</td>
+          <td>${designIssues.length ? designIssues.join(", ") : ""}</td>
+        </tr>
+      `;
+    }
+
+    html += `</table><br/>`;
+  }
+
+  return html;
 }
 
   // Builds a simple HTML report from the audit data

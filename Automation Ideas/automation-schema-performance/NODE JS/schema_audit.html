@@ -15,121 +15,173 @@
 </head>
 <body>
 <h1>MongoDB Schema Audit Report</h1>
-<table border="1">
-  <tr>
-    <th>Database</th>
-    <th>Collection</th>
-    <th>Reference Fields</th>
-    <th>Distinct Counts</th>
-    <th>Relationships</th>
-    <th>Design Issues</th>
-  </tr>
-  
-    <td><strong>Database:</strong> db</td>
-    <td><strong>Collection:</strong> items</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> ingestionDB</td>
-    <td><strong>Collection:</strong> assetTagMap</td>
-    <td><strong>Reference Fields:</strong> assetId, tagId</td>
-    <td><strong>Distinct Counts:</strong> {"assetId":2,"tagId":3}</td>
-    <td><strong>Relationships:</strong> {"assetId":"Likely 1:N","tagId":"Likely 1:N"}</td>
-    <td><strong>Design Issues:</strong> Small document using references → embedding recommended.</td>
-  
-    <td><strong>Database:</strong> ingestionDB</td>
-    <td><strong>Collection:</strong> tags</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> ingestionDB</td>
-    <td><strong>Collection:</strong> assets</td>
-    <td><strong>Reference Fields:</strong> metadataId</td>
-    <td><strong>Distinct Counts:</strong> {"metadataId":2}</td>
-    <td><strong>Relationships:</strong> {"metadataId":"Likely 1:1"}</td>
-    <td><strong>Design Issues:</strong> Small document using references → embedding recommended.</td>
-  
-    <td><strong>Database:</strong> ingestionDB</td>
-    <td><strong>Collection:</strong> categories</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> ingestionDB</td>
-    <td><strong>Collection:</strong> metadata</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> ingestionDB</td>
-    <td><strong>Collection:</strong> assetCategoryMap</td>
-    <td><strong>Reference Fields:</strong> assetId, categoryId</td>
-    <td><strong>Distinct Counts:</strong> {"assetId":2,"categoryId":2}</td>
-    <td><strong>Relationships:</strong> {"assetId":"Likely 1:1","categoryId":"Likely 1:1"}</td>
-    <td><strong>Design Issues:</strong> Small document using references → embedding recommended.</td>
-  
-    <td><strong>Database:</strong> test</td>
-    <td><strong>Collection:</strong> assets</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> test</td>
-    <td><strong>Collection:</strong> batchruns</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> test</td>
-    <td><strong>Collection:</strong> metadatas</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> test</td>
-    <td><strong>Collection:</strong> ingestQueue</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> test</td>
-    <td><strong>Collection:</strong> metadata</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> test</td>
-    <td><strong>Collection:</strong> ingestqueues</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> test</td>
-    <td><strong>Collection:</strong> batchRuns</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-    <td><strong>Database:</strong> local</td>
-    <td><strong>Collection:</strong> oplog.rs</td>
-    <td><strong>Reference Fields:</strong> </td>
-    <td><strong>Distinct Counts:</strong> {}</td>
-    <td><strong>Relationships:</strong> {}</td>
-    <td><strong>Design Issues:</strong> </td>
-  
-</table>
+
+  <h2>Database: db</h2>
+    <table border="1">
+      <tr>
+        <th>Collection</th>
+        <th>Reference Fields</th>
+        <th>Distinct Counts</th>
+        <th>Relationships</th>
+        <th>Design Issues</th>
+      </tr>
+    
+        <tr>
+          <td>items</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      </table><br/><h2>Database: ingestionDB</h2>
+    <table border="1">
+      <tr>
+        <th>Collection</th>
+        <th>Reference Fields</th>
+        <th>Distinct Counts</th>
+        <th>Relationships</th>
+        <th>Design Issues</th>
+      </tr>
+    
+        <tr>
+          <td>assetTagMap</td>
+          <td>assetId, tagId</td>
+          <td>{"assetId":2,"tagId":3}</td>
+          <td>{"assetId":"Likely 1:N","tagId":"Likely 1:N"}</td>
+          <td>Small document using references → embedding recommended.</td>
+        </tr>
+      
+        <tr>
+          <td>tags</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>assets</td>
+          <td>metadataId</td>
+          <td>{"metadataId":2}</td>
+          <td>{"metadataId":"Likely 1:1"}</td>
+          <td>Small document using references → embedding recommended.</td>
+        </tr>
+      
+        <tr>
+          <td>categories</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>metadata</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>assetCategoryMap</td>
+          <td>assetId, categoryId</td>
+          <td>{"assetId":2,"categoryId":2}</td>
+          <td>{"assetId":"Likely 1:1","categoryId":"Likely 1:1"}</td>
+          <td>Small document using references → embedding recommended.</td>
+        </tr>
+      </table><br/><h2>Database: test</h2>
+    <table border="1">
+      <tr>
+        <th>Collection</th>
+        <th>Reference Fields</th>
+        <th>Distinct Counts</th>
+        <th>Relationships</th>
+        <th>Design Issues</th>
+      </tr>
+    
+        <tr>
+          <td>assets</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>batchruns</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>metadatas</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>ingestQueue</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>metadata</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>ingestqueues</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      
+        <tr>
+          <td>batchRuns</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      </table><br/><h2>Database: admin</h2>
+    <table border="1">
+      <tr>
+        <th>Collection</th>
+        <th>Reference Fields</th>
+        <th>Distinct Counts</th>
+        <th>Relationships</th>
+        <th>Design Issues</th>
+      </tr>
+    </table><br/><h2>Database: local</h2>
+    <table border="1">
+      <tr>
+        <th>Collection</th>
+        <th>Reference Fields</th>
+        <th>Distinct Counts</th>
+        <th>Relationships</th>
+        <th>Design Issues</th>
+      </tr>
+    
+        <tr>
+          <td>oplog.rs</td>
+          <td></td>
+          <td>{}</td>
+          <td>{}</td>
+          <td></td>
+        </tr>
+      </table><br/>
+
 </body>
 </html>
