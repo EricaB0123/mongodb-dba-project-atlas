@@ -37,7 +37,7 @@ Suggests whether embedding or referencing is more appropriate based on observed 
   - [Embedded Array Analysis](#embedded-array-analysis)
   - [High-Cardinality Field Checks](#high-cardinality-field-checks)
   - [Oversized Document Detection](#oversized-document-detection)
-  - [Embedding vs Referencing Recommendations](#embedding-vs-referencing-recommendations)
+  - [Embedding vs Referencing Recommendations](#Example-1-A-collection-that-has-too-many-references)
 - [When to Use This Script](#when-to-use-this-script)
 - [Demonstration](#demonstration)
   - [Test Database Setup](#test-database-setup)
@@ -54,8 +54,8 @@ Suggests whether embedding or referencing is more appropriate based on observed 
 
 Using the Test database setup that contains 'assets, metadata, batchRuns, and lifecycle collections'. Below is Demonstrating the development and testing of the script.
 
-### Example 1 A collection that has too many references (over‑normalized, too relational).
-
+### Example 1 A collection that has too many references.
+#### (over‑normalized, too relational)
 #### Pre steps:
 
 1) Made sure i had a test database setup.
@@ -87,16 +87,21 @@ l> mongosh "mongodb+srv://username@hiddenvalues.mongodb.net/" `
 
 ```
 
-#### Html output
+#### Html output - Using Node.js
 
 ```
-Atlas ingestionDB> load("Automation Ideas/automation-schema-performance/automation-schema-performance.js")
-
-HTML report generated: audit-report.html
-
-true
+PS \Automation Ideas\automation-schema-performance\NODE JS> node Schema_Capture.js html "mongodb+srv://srvDatabaseAdministrator:%2557Respect@cluster0.c1osr3x.mongodb.net/"
+>> 
+HTML report written to schema_audit.html
 
 ```
+
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/035ad3d4-65eb-49f4-9f64-2cf7ee39754d" />
+
+When running the report - i intentiinaly excluded the internal databases. To show the 2 databases in focus.  
+
+In the output we can see that the collection'AssetTagMap'	assetId, tagId	{"assetId":2,"tagId":3}	{"assetId":"Likely 1:N","tagId":"Likely 1:N"}. It has the problem "Small document using references → embedding recommended".
+I need to add more context to the script on recommended next actions. The basic idea is that the output is suggesting that instead of keeping a seperate mapping collection that requires level joins. That maybe embedding the tags inside 'asset' could improve performance. 
 
 ### Report output and Automation Suggestions
 
