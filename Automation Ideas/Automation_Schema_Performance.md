@@ -244,19 +244,36 @@ Collections:
 
 [Current Script State](https://github.com/EricaB0123/mongodb-dba-project-atlas-bare-metal)
 
-Currently working on the switch logic to show different format output. Ive attached 2 scripts for now. eventually into one less confusing output. main idea is to show the format and suggestions and it can be adjusted. for lijes of monitoring or further dba context.
+Currently working on the switch logic to show different format output. Ive attached 2 scripts for now. eventually into one less confusing output. main idea is to show the format and suggestions and it can be adjusted. for likes of monitoring or further dba context.
+
+At the moment the script put a single description of possible design issues, but no example or further context. Having an example suggestion could then be further added for the script to make these changes.
+
+For example:
+```
+Collection	Reference Fields	Distinct Counts	Relationships	Design Issues
+assetTagMap	assetId, tagId	{"assetId":2,"tagId":3}	{"assetId":"Likely 1:N","tagId":"Likely 1:N"}	Small document using references → embedding recommended
+```
+Would make more sense to also include:
+```
+Separate Collection (References)Embedded Approach (Recommended)
+assets collection: { "_id": 2, "name": "Laptop" }
+assetTagMap collection: { "assetId": 2, "tagId": 3 }assets collection:{  "_id": 2,  "name": "Laptop",  "tags": [3, 4, 5] }
+```
+Suggested way the collection could be updated.
 
 ## Script Logic Explanation
 
 [Schema Audit Tests](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/Automation%20Ideas/automation-schema-performance/NODE%20JS/TESTING%20Script%20Logic)
 
-[Screenshots of Updating scipt logic](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/docs/screenshots)
-
 I started with 2 Main Classes - Seperated the logic. I've ended up with classes for running the Audit, Filtering per databases and the different mode types.
 At the moment the script is run under node.js The next steps is to demonstrate in mongosh and maybe powershell to show the different outputs.
 
 Mongosh Testing:
-<img width="400" height="230" alt="image" src="https://github.com/user-attachments/assets/6fc6b2a2-0416-44c8-9d65-05bd083d6d2a" />
+[Screenshots of Updating scipt logic](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/docs/screenshots)
+
+
+
+
 
 
 
