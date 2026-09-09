@@ -238,6 +238,9 @@ Collections:
 ======================================
 ```
 
+##HTML Output
+
+<img width="1840" height="880" alt="image" src="https://github.com/user-attachments/assets/6fd38d17-35f5-480b-b79b-fa5181e5d3c5" />
 
 
 ## Improvements
@@ -268,20 +271,8 @@ Suggested way the collection could be updated.
 I started with 2 Main Classes - Seperated the logic. I've ended up with classes for running the Audit, Filtering per databases and the different mode types.
 At the moment the script is run under node.js The next steps is to demonstrate in mongosh and maybe powershell to show the different outputs.
 
-Adding a function similar to 'buildRelationshipInsights', allows Adding more context for recommendations.  
+Adding a function 'getParentStatus' helps determine potential normilization. It looks at the collections reference fields, assigns parent or child. This is meant to work with the 'getRecommendation' function to recommend whether a collection should use embedding or referencing. The Next step in the script logic, must implement data safety checks before executing a collection merge. For embedding/reference recommendations, need to validate the 16MB document limit, evaluate index overhead, and account for potential data duplication.
 
-For example: 
-
-```
-  getRecommendation(refFields, relationships, designIssues) {
-
-  etc
-
-  return ;
-}
-
-
-```
 
 Mongosh Testing:
 [Screenshots of Updating scipt logic](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/docs/screenshots)
