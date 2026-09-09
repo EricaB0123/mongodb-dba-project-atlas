@@ -227,8 +227,9 @@ async runAudit() {
   };
 
   // 1. Get all databases
-  const dbNames = await this.getDatabases();
-
+  const dbNames = (await this.getDatabases()).filter(name =>
+  !["admin", "local", "config", "db"].includes(name)
+);
   for (const dbName of dbNames) {
     const dbReport = {
       collections: [],
