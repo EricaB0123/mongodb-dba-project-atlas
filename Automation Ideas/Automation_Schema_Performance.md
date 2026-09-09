@@ -268,6 +268,21 @@ Suggested way the collection could be updated.
 I started with 2 Main Classes - Seperated the logic. I've ended up with classes for running the Audit, Filtering per databases and the different mode types.
 At the moment the script is run under node.js The next steps is to demonstrate in mongosh and maybe powershell to show the different outputs.
 
+Adding a function similar to 'buildRelationshipInsights', allows Adding more context for recommendations.  
+
+For example: 
+
+```
+  getRecommendation(refFields, relationships, designIssues) {
+
+  etc
+
+  return ;
+}
+
+
+```
+
 Mongosh Testing:
 [Screenshots of Updating scipt logic](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/docs/screenshots)
 
