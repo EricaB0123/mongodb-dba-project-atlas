@@ -342,9 +342,6 @@ buildHtmlWithRecommendations(auditData) {
   IN order for the html to be built, we need to loop through each database, then each collection, and extract the relevant information for the report.
   
 
-
-
-
 */
  const items = [];
 // Loop all databases
@@ -352,16 +349,17 @@ buildHtmlWithRecommendations(auditData) {
 
     // Loop all collections inside each database
     for (const collName of dbReport.collections) {
-   items.push = {
-    database: dbName,
-    collection: collName,
-    referenceFields: dbReport.referenceAnalysis[collName].referenceFields,
-    distinctCounts: dbReport.referenceAnalysis[collName].distinctCounts,
-    relationships: dbReport.relationships[collName],
-    designIssues: dbReport.designIssues[collName]
-  };
-    }
+    items.push({
+      database: dbName,
+      collection: collName,
+      referenceFields: dbReport.referenceAnalysis[collName].referenceFields,
+      distinctCounts: dbReport.referenceAnalysis[collName].distinctCounts,
+      relationships: dbReport.relationships[collName],
+      designIssues: dbReport.designIssues[collName]
+    });
+
   }
+}
   return items.map(item => `
     <p><strong>Database:</strong> ${item.database}</p>
     <p><strong>Collection:</strong> ${item.collection}</p>
