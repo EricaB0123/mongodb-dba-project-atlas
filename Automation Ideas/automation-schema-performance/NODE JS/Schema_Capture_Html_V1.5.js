@@ -318,13 +318,20 @@ class HtmlReportBuilder {
 //method for pulling part the information. To be pulled from the main build method.
 buildHtmlWithRecommendations(auditData) {
   //Put the objects into an arrary for it to then be grabbed for the html output
-  const dbNames = Object.keys(auditData.databases);
+  
+  /*const dbNames = Object.keys(auditData.databases);
   const firstDb = dbNames[0];
 
   const dbReport = auditData.databases[firstDb];
   const firstCollection = dbReport.collections[0];
+ */
+ const items = [];
+// Loop all databases
+  for (const [dbName, dbReport] of Object.entries(auditData.databases)) {
 
-   const item = {
+    // Loop all collections inside each database
+    for (const collName of dbReport.collections) {
+   items.push = {
     database: firstDb,
     collection: firstCollection,
     referenceFields: dbReport.referenceAnalysis[firstCollection].referenceFields,
@@ -332,7 +339,7 @@ buildHtmlWithRecommendations(auditData) {
     relationships: dbReport.relationships[firstCollection],
     designIssues: dbReport.designIssues[firstCollection]
   };
-
+    }
   return `
     <p><strong>Database:</strong> ${item.database}</p>
     <p><strong>Collection:</strong> ${item.collection}</p>
