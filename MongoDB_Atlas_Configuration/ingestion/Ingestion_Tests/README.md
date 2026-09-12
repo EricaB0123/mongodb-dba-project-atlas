@@ -20,22 +20,11 @@ Used Thunder Client to send HTTP requests to the Express API, triggering an inge
 <img width="1052" height="695" alt="image" src="https://github.com/user-attachments/assets/852ad496-d521-48ff-bc37-4b730b19d76e" />
 
 ### Example: Sending a Test POST Request
-To test ingestion, send a POST request to:
+This creates a new ingestion queue entry in the MongoDB Atlas.
 
-Setting up a test POST:
-```
-{
-  "datasetName": "testDataset"
-}
-
-
-```
-### Example: Sending Metadata
 <img width="1037" height="712" alt="image" src="https://github.com/user-attachments/assets/513db623-d372-46e5-842c-2cef41bfc470" />
-This creates a new ingestion queue entry in MongoDB Atlas.
 
-
-Sending POSt api call for sending 'email'
+### Example: Sending Metadata
 
 <img width="1062" height="701" alt="image" src="https://github.com/user-attachments/assets/cdcbfa41-560f-4389-8cd3-e575086d12b9" />
 
