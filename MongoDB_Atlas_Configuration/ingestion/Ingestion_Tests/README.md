@@ -47,7 +47,7 @@ Sending POSt api call for sending 'email'
 <img width="1050" height="745" alt="image" src="https://github.com/user-attachments/assets/14ddc187-6e10-441a-9661-deed8399d9a7" />
 
 ## Verifying Documents in MongoDB Atlas
-Proof documents are showing in mongodb after ingesting. After sending POST requests, the inserted documents appear in your Atlas cluster under the database specified in your .env connection string. I tested this under the 'app user' configured in the [RBAC folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac)
+Proof documents are showing in mongodb after ingesting. After sending POST requests, the inserted documents appear in the Atlas cluster under the database specified in the .env connection string. I tested this under the 'app user' configured in the [RBAC folder](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/MongoDB_Atlas_Configuration/rbac).
 
 <img width="1003" height="411" alt="image" src="https://github.com/user-attachments/assets/c5572902-f05b-46c5-82f6-976c1d738618" />
 
