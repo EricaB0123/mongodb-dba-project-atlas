@@ -1,130 +1,92 @@
-# MongoDB Atlas Monitoring (Enterprise Scaffolding)
+# Database Performance Metrics
 
-This folder represents the **monitoring foundation** for the Atlas‑centric operational platform.  
-It is intentionally scaffolded — mirroring how enterprise teams begin monitoring design before full automation is implemented.
+## Connections and Cursors
+Basic operational checks. Useful for identifying:
+- too many open cursors  
+- connection spikes  
+- application structure issues  
 
-The goal of this module is to bridge the gap between **Atlas reactive telemetry** and **proactive structural monitoring**, especially around schema drift, ingestion health, and relationship inference.
-
----
-
-## Current Monitoring Concepts
-
-### Connections and Cursors
-Atlas provides metrics for:
-- active connections  
-- open cursors  
-- cursor timeouts  
-
-These help identify application‑side issues such as:
-- connection storms  
-- unclosed cursors  
-- inefficient pagination  
-
-### Excess — Application Structure Issues
-High cursor counts or excessive connections often indicate:
-- poor connection pooling  
-- chatty application behaviour  
-- inefficient query patterns  
+## Excess – Application Structure Issues
+Some performance issues come from how the application is structured rather than the database itself.
 
 ---
 
-# Atlas Monitoring Tools (Reactive)
+Atlas Monitoring tools include Metrics, Performance Advisor, Schema Suggestions, and Performance Insights.  
+They are **reactive**, meaning they report issues only after they start affecting performance (slow queries, high load, etc).
 
-Atlas provides several built‑in monitoring tools:
-
-- **Metrics Dashboard**  
-- **Performance Advisor**  
-- **Schema Suggestions**  
-- **Performance Insights**
-
-These tools are **reactive** — they rely on:
-- slow query telemetry  
-- sampled documents  
-- index usage patterns  
-- aggregation execution behaviour  
-
-They highlight issues **after** they begin affecting performance.
+There is a performance gap with Atlas monitoring around **structural drift detection** — mainly relationship inference and embedding vs referencing validation based on real data distribution, not query behaviour.
 
 ---
 
-# The Performance Gap: Structural Drift Detection
+I've started looking into areas that could help performance further:  
+[Database Design Extract Script Idea](https://github.com/EricaB0123/mongodb-dba-project-atlas/blob/main/Automation%20Ideas/Automation_Schema_Performance.md)
 
-Atlas does **not** detect schema drift or relationship drift.  
-This is where the **custom schema audit + drift detection** work in this project becomes valuable.
+This compares what Atlas currently offers vs what deeper structural analysis could provide.
 
-### Atlas Does *Not* Have:
+---
 
-#### 1. Relationship Pattern Detection (1:1, 1:N, N:M)
-Atlas cannot infer relationship types from real data distribution.
+## Atlas Does NOT Have
 
-Useful structural signals:
-- distinct reference ID counts  
-- relationship classification  
-- PK/FK drift detection  
+### 1. Relationship Pattern Detection (1:1, 1:N, N:M)
+Atlas does not infer relationship types from real data.
 
-#### 2. Cross‑Collection Structural Analysis
-Atlas tools operate **per collection** or **per query**.
+Helpful signals would include:
+- counts of distinct reference IDs  
+- classification of relationship behaviour  
+- flags for relational drift (PK/FK patterns)  
 
-Custom audit logic analyzes:
+### 2. Cross‑Collection Structural Analysis
+Atlas tools work per collection or per query.
+
+The script idea analyses:
 - multiple collections together  
 - reference maps  
 - relationship density  
 - schema fingerprints  
 
-#### 3. Proactive Schema Drift Detection
+This helps understand how collections relate to each other, which Atlas does not show.
+
+### 3. Proactive Schema Drift Detection
 Atlas detects issues **after** they impact queries.
 
-Custom audit logic detects drift **before** telemetry changes:
+The script idea detects issues **before** they appear in telemetry:
 - arrays growing too large  
 - documents approaching size limits  
 - reference patterns becoming relational  
 - ingestion changes altering structure  
 
-This is especially valuable for:
-- ingestion pipelines  
-- migrations  
-- evolving datasets  
+This is valuable for ingestion pipelines and migrations.
 
-#### 4. High‑Cardinality Field Detection
-Atlas only warns when cardinality causes slow queries.
+### 4. High‑Cardinality Field Detection
+Atlas does not warn about high‑cardinality fields unless they cause slow queries.
 
-Custom audit logic identifies:
-- high‑cardinality fields  
-- over‑normalisation  
-- embedding opportunities  
-- reference‑density anomalies  
+The script idea suggests embedding when reference density indicates over‑normalisation — even if no `$lookup` has occurred yet.
 
 ---
 
-# Atlas Monitoring — Useful Areas
+## Atlas Monitoring – Useful Areas
 
-### Oversized Documents
+### 1. Oversized Documents
 Atlas flags “bloated documents” when they cause slow queries or indexing issues.
 
-### Large / Unbounded Arrays
+### 2. Large / Unbounded Arrays
 Atlas warns about “unbounded arrays” in Schema Suggestions.
 
-### Embedding vs Referencing Hints
+### 3. Embedding vs Referencing Hints
 Atlas suggests embedding when `$lookup` is slow.  
-Custom audit logic suggests embedding when **reference density** indicates over‑normalisation — even if no `$lookup` has occurred yet.
+The script idea suggests embedding earlier, based on reference density.
 
 ---
 
-# Atlas Metrics Overview
+## Atlas Metrics
 
 ### Query Targeting
-Shows the ratio of:
-- index keys scanned  
-- documents returned  
-
-Helps determine index efficiency.
+Shows how efficiently indexes are used (index keys scanned vs documents returned).
 
 ### Scanned Objects
-Shows the ratio of:
-- scanned objects  
-- returned objects  
+Shows how many documents MongoDB had to scan vs how many it returned.
 
-High ratios (e.g., 100 scanned vs 10 returned) indicate:
+High ratios (e.g., 100 scanned vs 10 returned) usually mean:
 - collection scans  
 - insufficient indexes  
 - poor query patterns  
@@ -137,22 +99,22 @@ Tracks:
 - queries  
 - commands  
 
-Useful for workload profiling.
+Useful for understanding workload behaviour.
 
 ### CPU Utilization
-Shows cluster CPU pressure and workload saturation.
+Shows cluster CPU pressure.
 
 ### Memory Utilization
 Shows working set fit and memory pressure.
 
 ---
 
-# Under‑Utilization Signals
-
-- Too few connections  
-- Low CPU usage  
-- Minimal scanned objects  
-- Idle OpCounters  
+## Too Few – Under Utilization
+Signals include:
+- low CPU  
+- low memory usage  
+- minimal scanned objects  
+- idle OpCounters  
 
 Often indicates:
 - over‑provisioned cluster  
@@ -161,8 +123,7 @@ Often indicates:
 
 ---
 
-# Indexes
-
+## Indexes
 Monitoring helps identify:
 - unused indexes  
 - insufficient indexes  
@@ -171,36 +132,10 @@ Monitoring helps identify:
 
 ---
 
-# Execution Timeouts
-
+## Execution Timeouts
 Timeouts often indicate:
 - slow queries  
-- insufficient indexes  
+- missing indexes  
 - large scans  
 - memory pressure  
-- schema drift causing unexpected query patterns  
-
----
-
-# Future Monitoring Additions
-
-This folder will eventually include:
-
-- ingestion health checks  
-- schema drift scoring  
-- relationship density dashboards  
-- cardinality heatmaps  
-- drift → Dynatrace event automation  
-- batch lifecycle visualizations  
-- proactive ingestion anomaly detection  
-
-For now, this folder contains **documentation scaffolding** that aligns with the broader automation roadmap.
-
----
-
-# Related Work
-
-- [Automation Schema Performance](../../Automation%20Ideas/Automation_Schema_Performance.md)  
-- [Schema Audit Foundations](../../automation-schema-performance/)  
-- [Batch Monitoring](../../docs/batch-monitoring.md)
-
+- schema drift changing query behaviour
