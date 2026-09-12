@@ -129,6 +129,7 @@ ingestion/metadata/templates/
 ingestion/metadata/examples/
 ``
 ## RBAC Workflow (In Progress)
+
 RBAC simulation mirrors enterprise AD/OIDC mapping:
 
 - DatasetUploaders
@@ -140,8 +141,33 @@ RBAC simulation mirrors enterprise AD/OIDC mapping:
 RBAC configuration lives in:
 
 ``
-src/atlas/rbac/
+MongoDB_Atlas_Configuration/rbac/
+
 ``
+The RBAC folder simulates enterprise Atlas access‑control patterns using custom roles created specifically for the test database. These roles mirror real Atlas operational separation between application users, DBAs, and cluster‑level administrators.
+
+Roles Created for the Database
+
+- clusterAdmin
+    - Full administrative control over the cluster
+    - Cluster‑level actions, user management, full DB access
+- dbaAdministrator
+    - Operational DBA role for schema, ingestion oversight, and monitoring
+    - Read/write on admin DB, read/write on test DB, index creation, schema validation
+- appUser
+    - Least‑privilege application role used for ingestion API testing	Insert
+    - read on DB collections only
+
+
+This folder contains:
+
+- Role JSON definitions
+- User mappings
+- Documentation explaining how Atlas RBAC ties into ingestion
+- Notes on how these roles align with enterprise AD/OIDC patterns
+
+
+
 ## Batch Monitoring (In Progress)
 Batch lifecycle and ingestion status are simulated using:
 
@@ -157,52 +183,57 @@ src/atlas/monitoring/
 docs/batch-monitoring.md
 ``
 
-## CI/CD Automation (In Progress / Future Ideas)
-- Terraform
+CI/CD Automation (In Progress / Future Ideas)
+This project includes a forward‑looking CI/CD and operational automation roadmap designed to mirror enterprise Atlas environments.
+
+Terraform
 - Atlas provider configuration
 - Vault secret retrieval
-- service account rotation
+- Service account rotation
 
 Vault
-- secret rotation
-- versioning
-- environment separation
+- Secret rotation
+- Versioning
+- Environment separation
 
 Jenkins
 - DDL pipeline
-- release branching strategy
+- Release branching strategy
 - SIT → pre‑prod → prod promotion
 
-CI/CD documentation:
+Operational Automation (In Progress)
+Enterprise Atlas automation patterns are being modelled, including:
 
-```
-cicd/
-Automation Ideas/
-```
-The automation-ideas/ folder contains the forward‑looking automation roadmap for this project. It expands beyond runbooks into broader operational automation concepts.
-
-This includes:
-- schema audit automation
+- Runbook scheduling
+- Deployment validation workflows
 - Dynatrace event ingestion
-- ingestion quality checks
-- metadata governance automation
-- runbook scheduling concepts
-- deployment validation workflows
+- Ingestion quality checks
+- Metadata governance automation
 
-Explore the full list of ideas:
+### Schema Drift Automation (Planned / In Progress)
+Schema drift automation is a key future component of this project.
+It reflects how enterprise data‑platform teams detect, score, and respond to schema changes across ingestion pipelines.
 
-## Automation Ideas
-### Architecture Documentation
-Detailed architecture diagrams and workflow explanations live in:
+This automation will include:
+
+- Schema audit execution (JSON‑based audit rules)
+- Detection of drift between expected vs actual document structure
+- Cardinality scoring for many‑to‑many relationships
+- Naming drift detection (field naming inconsistencies)
+- Large‑document warnings
+- Automated Dynatrace event generation for drift alerts
+- Integration with batch lifecycle monitoring
+- Optional CI/CD enforcement (preventing deployment if drift exceeds threshold)
+
+This aligns with real Atlas operational practices where schema drift is monitored continuously to protect ingestion reliability and downstream analytics.
+
+[Documentation and prototypes live in:](https://github.com/EricaB0123/mongodb-dba-project-atlas/tree/main/Automation%20Ideas)
 
 ```
-docs/
-Topics include:
-- Atlas workflows
-- ingestion flow
-- metadata lifecycle
-- batch monitoring
-- CI/CD overview
+automation-ideas/
+src/atlas/monitoring/
+src/automation-schema-performance/
+
 ```
 
 ## Purpose
