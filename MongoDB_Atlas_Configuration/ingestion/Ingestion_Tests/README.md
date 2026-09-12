@@ -1,8 +1,61 @@
+## How Ingestion Works
+
+- Routes define the API endpoints
+- Controllers contain the logic that runs when an endpoint is called
+- Models define the MongoDB collections and document structure
+- Mongoose writes the documents into Atlas
 
 
+The route folder contains the following fields:
+- /ingest → ingest route
+- /metadata → metadata route
+- /assets → assets route
+- /batch → batch route
 
+This is the current folder structure:
 
+```
+MongoDB_Atlas_Configuration/
+│
+├── src/
+│   ├── app.js
+│   ├── config/
+│   │   └── db.js
+│   │
+│   ├── routes/
+│   │   ├── ingest.js
+│   │   ├── metadata.js
+│   │   ├── assets.js
+│   │   └── batch.js
+│   │
+│   ├── controllers/
+│   │   ├── ingestController.js
+│   │   ├── metadataController.js
+│   │   ├── assetController.js
+│   │   └── batchController.js
+│   │
+│   └── models/
+│       ├── IngestQueue.js
+│       ├── Metadata.js
+│       ├── Asset.js
+│       └── BatchRun.js
+│
+├── ingestion/
+│   └── Ingestion_Tests/   ← Thunder Client / REST Client test payloads
+│
+└── .env                   ← MongoDB Atlas connection string
+```
 
+The POST ingestion requests are sent to /ingest. Express then forwards the requests to the controller. The Controller then validates and then writes the documnet to the correct model. Documents are created using the Mongoose Model, which sends to the Atlas DB.
+
+The following shows a demonstration of the following steps in :
+
+1. Send a Post Request
+2. App.js Routes this
+3. routes forward this to the controllers
+4. Controllers insert documents
+5. Mongoose writes the documents in Atlas
+   
 
 ## Connecting to the MongoDb via express APi
 
