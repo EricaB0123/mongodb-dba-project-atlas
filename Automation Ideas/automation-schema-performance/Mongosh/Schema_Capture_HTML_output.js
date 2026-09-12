@@ -188,12 +188,85 @@ collections.forEach(coll => {
     issues.push("Small document using references → embedding recommended.");
   }
 
-  if (refFields.length === 2 && Object.keys(sample).length === 2) {
+  const nonIdFields = Object.keys(sample).filter(k => k !== "_id");
+if (refFields.length === 2 && nonIdFields.length === 2) {
     issues.push("Looks like a join table (N:M) → relational drift.");
-  }
+}
+
 
   auditData.designIssues[coll] = issues;
 });
+
+
+function getParentStatus(collName) {
+  const thisRefs = auditData.referenceAnalysis[collName].referenceFields;
+
+  let referencedByOthers = false;
+  let referencedByJoinTable = false;
+
+  const normalizedColl = collName.toLowerCase().replace(/s$/, "");
+
+  collections.forEach(other => {
+    const refFields = auditData.referenceAnalysis[other].referenceFields;
+
+    refFields.forEach(f => {
+      const normalizedField = f.toLowerCase().replace(/id$/, "");
+
+      if (normalizedField === normalizedColl) {
+        referencedByOthers = true;
+
+        if (auditData.referenceAnalysis[other].referenceFields.length === 2) {
+          referencedByJoinTable = true;
+        }
+      }
+    });
+  });
+
+  if (referencedByJoinTable) return "Parent Document";
+  if (thisRefs.length > 0) return "Child Document";
+  return "Child Document";
+}
+
+auditData.parentStatus = auditData.parentStatus || {};
+auditData.parentStatus[coll] = getParentStatus(coll);
+
+function getFixSuggestion(collName, refFields, designIssues) {
+  if (designIssues.some(i => i.includes("join table"))) {
+    const parents = refFields.map(f => f.replace(/Id$/i, ""));
+    const primaryParent = parents[0];
+    return `Remove '${collName}' and embed '${parents.slice(1).join(", ")}' inside '${primaryParent}'.`;
+  }
+
+  if (designIssues.some(i => i.includes("embedding recommended"))) {
+    if (refFields.length === 1) {
+      const target = refFields[0].replace(/Id$/i, "");
+      return `Embed '${target}' inside '${collName}'.`;
+    }
+
+    if (refFields.length > 1) {
+      const targets = refFields.map(f => f.replace(/Id$/i, "")).join(", ");
+      return `Embed (${targets}) inside '${collName}'.`;
+    }
+  }
+
+  return "No fix required.";
+}
+
+auditData.fixSuggestion = auditData.fixSuggestion || {};
+auditData.fixSuggestion[coll] = getFixSuggestion(coll, refFields, issues);
+
+function getRecommendation(refFields, designIssues) {
+  if (designIssues.some(i => i.includes("join table"))) {
+    return "Remove join-table and embed inside parent.";
+  }
+  if (designIssues.some(i => i.includes("embedding recommended"))) {
+    return "Embedding recommended.";
+  }
+  return "No action needed.";
+}
+
+auditData.recommendation = auditData.recommendation || {};
+auditData.recommendation[coll] = getRecommendation(refFields, issues);
 
 // ============================================================================
 // MODE HANDLERS
