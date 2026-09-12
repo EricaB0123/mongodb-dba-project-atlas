@@ -35,30 +35,49 @@ These components are partially implemented and currently being expanded:
 - Monitoring — batch lifecycle, ingestion health, schema audit integration
 - CI/CD — detailed Terraform, Vault, and Jenkins pipelines
 - Operational automation — runbook scheduling, deployment validation, Dynatrace event ingestion
+- Schema Audit - Metadata governance automation Script idea. 
 
 ## Folder Structure
 
 ```
-│   ├── src/
-│   │   ├── atlas/
-│   │   ├── ingestion/        ← in progress
-│   │   ├── rbac/             ← in progress
-│   │   ├── monitoring/       ← in progress
-│   │   └── ddl/
-│   ├── server.js
-│   ├── .env.example
-│   └── package.json
+MongoDB_Atlas_Configuration/
 │
-├── cicd/                     ← in progress
-│   ├── terraform/
-│   ├── vault/
-│   └── jenkins/
+├── src/
+│   ├── app.js                 ← Express API entry point
+│   ├── config/
+│   │   └── db.js              ← MongoDB Atlas connection
+│   │
+│   ├── routes/                ← API endpoints
+│   │   ├── ingest.js
+│   │   ├── metadata.js
+│   │   ├── assets.js
+│   │   └── batch.js
+│   │
+│   ├── controllers/           ← Ingestion logic
+│   │   ├── ingestController.js
+│   │   ├── metadataController.js
+│   │   ├── assetController.js
+│   │   └── batchController.js
+│   │
+│   └── models/                ← MongoDB collections
+│       ├── IngestQueue.js
+│       ├── Metadata.js
+│       ├── Asset.js
+│       └── BatchRun.js
 │
-├── automation-ideas/         
+├── ingestion/
+│   └── Ingestion_Tests/       ← Thunder Client test payloads
 │
-├── docs/
+├── rbac/                      ← RBAC user + role simulation
+│
+├── cicd/                      ← Terraform, Vault, Jenkins (in progress)
+│
+├── automation-ideas/          ← Operational automation roadmap
+│
+├── docs/                      ← Architecture, workflows, diagrams
 │
 └── README.md
+
 ```
 ## MongoDB Atlas Administration
 Enterprise Atlas workflows include:
@@ -71,7 +90,7 @@ Enterprise Atlas workflows include:
 ## Documentation lives in:
 
 ``
-docs/atlas-workflows.md
+docs/
 src/atlas/
 automation-ideas/
 ``
@@ -90,11 +109,8 @@ GET /batch/status — batch lifecycle simulation
 GET /atlas/view — Atlas view verification
 
 Ingestion logic lives in:
+MongoDB_Atlas_Configuration/src/ingestion/(https://github.com/EricaB0123/mongodb-dba-project-atlas/blob/main/MongoDB_Atlas_Configuration/ingestion/Ingestion_Tests/README.md)
 
-``
-MongoDB_Atlas_Configuration/src/ingestion/
-docker-version/src/ingestion/
-``
 
 ## Metadata Workflow
 Metadata follows enterprise patterns:
