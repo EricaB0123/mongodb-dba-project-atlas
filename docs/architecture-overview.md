@@ -1,171 +1,173 @@
+# Architecture Overview
 
 ## Database Setup
 
-metadata
+### metadata  
+Stores dataset‑level information and structural definitions.  
+Acts as the ingestion system’s **[metadata catalog](ca://s?q=Explain_metadata_catalog)**.
 
-Stores dataset‑level information and structural definitions.This collection acts as the ingestion system’s metadata catalog.
+**Purpose**
+- Identify datasets uniquely  
+- Track who uploaded the dataset  
+- Describe expected fields and types  
+- Provide schema governance for ingestion  
 
-Purpose:
+**Required Fields**
+- datasetName — unique identifier  
+- uploaderEmail — audit trail  
+- fields[] — array describing field names and types  
+- createdAt — timestamp for lifecycle and retention  
 
-- Identify datasets uniquely
-- Track who uploaded the dataset
-- Describe the expected fields and types
-- Provide schema governance for ingestion
+---
 
-Required Fields:
+### assets  
+Stores the actual data records belonging to a dataset.  
+This is the ingestion system’s **[payload layer](ca://s?q=Explain_payload_layer)**.
 
-- datasetName — unique identifier for the dataset
-- uploaderEmail — audit trail for compliance
-- fields[] — array describing field names and types
-- createdAt — timestamp for lifecycle and retention
+**Purpose**
+- Store individual records tied to a dataset  
+- Support flexible document shapes  
+- Enable dataset‑level queries and lifecycle operations  
 
-assets
+**Required Fields**
+- datasetName — links asset to metadata  
+- data — the ingested record  
+- createdAt — supports retention, sorting, monitoring  
 
-Stores the actual data records belonging to a dataset.This is the ingestion system’s payload layer.
+---
 
-Purpose:
+### batchRuns  
+Tracks ingestion runs and their lifecycle stages.  
+This is the system’s **[operational heartbeat](ca://s?q=Explain_operational_heartbeat)**.
 
-- Store individual records tied to a dataset
-- Support flexible document shapes
-- Enable dataset‑level queries and lifecycle operations
+**Purpose**
+- Record ingestion attempts  
+- Track run status (pending, running, succeeded, failed)  
+- Track lifecycle stage (created, validated, ingested, archived)  
+- Support monitoring and troubleshooting  
 
-Required Fields:
+**Required Fields**
+- batchId — unique identifier  
+- runStatus — operational state  
+- lifecycleStage — ingestion lifecycle  
+- startedAt / completedAt — duration and SLA tracking  
 
-- datasetName — links asset to metadata
-- data — the ingested record
-- createdAt — supports retention, sorting, and monitoring
+---
 
-batchRuns
+### ingestQueue  
+Represents queued ingestion tasks waiting to be processed.  
+This is the ingestion system’s **[orchestration layer](ca://s?q=Explain_ingestion_orchestration)**.
 
-Tracks ingestion runs and their lifecycle stages.This is the system’s operational heartbeat.
+**Purpose**
+- Queue datasets for ingestion  
+- Track queue state  
+- Support ingestion processors  
+- Detect stuck or failed jobs  
 
-Purpose:
+**Required Fields**
+- datasetName — identifies dataset  
+- status — queued, running, completed, failed  
+- createdAt — queue entry timestamp  
+- updatedAt — last state change  
 
-- Record ingestion attempts
-- Track run status (pending, running, succeeded, failed)
-- Track lifecycle stage (created, validated, ingested, archived)
-- Support monitoring and troubleshooting
+---
 
-Required Fields:
+## Database Collection Setup
 
-- batchId — unique identifier for each run
-- runStatus — operational state
-- lifecycleStage — ingestion lifecycle
-- startedAt / completedAt — duration and SLA tracking
+- Metadata — describes datasets (who, what, structure)  
+- Assets — actual data records tied to a dataset  
+- BatchRuns — tracks ingestion runs and lifecycle  
+- IngestQueue — tracks queued ingestion tasks  
 
-ingestQueue
+---
 
-Represents queued ingestion tasks waiting to be processed.This is the ingestion system’s orchestration layer.
+## Fields for Each Collection
 
-Purpose:
+### metadata
+- datasetName (string, required, unique)  
+- uploaderEmail (string, required)  
+- fields (array of { name, type })  
+- createdAt (date, required)  
 
-- Queue datasets for ingestion
-- Track queue state
-- Support ingestion processors
-- Detect stuck or failed jobs
+### assets
+- datasetName (string, required)  
+- data (object, required)  
+- createdAt (date, required)  
 
-Required Fields:
+### batchRuns
+- batchId (string, required, unique)  
+- runStatus (string: pending / running / succeeded / failed)  
+- lifecycleStage (string: created / validated / ingested / archived)  
+- startedAt (date)  
+- completedAt (date)  
 
-- datasetName — identifies dataset to ingest
-- status — queued, running, completed, failed
-- createdAt — queue entry timestamp
-- updatedAt — last state change
+### ingestQueue
+- datasetName (string, required)  
+- status (string: queued / running / completed / failed)  
+- createdAt (date)  
+- updatedAt (date)  
 
+---
 
-
-### Database Collection Setup
-
-- Metadata — describes datasets (who, what, structure)
-- Assets — actual data records tied to a dataset
-- BatchRuns — tracks ingestion runs and lifecycle
-- IngestQueue — tracks queued ingestion tasks
-
-### Fields for each collection
-
-##### metadata
-- datasetName (string, required, unique)
-- uploaderEmail (string, required)
-- fields (array of { name, type })
-- createdAt (date, required)
-
-##### assets
-- datasetName (string, required)
-- data (object, required)
-- createdAt (date, required)
-
-##### batchRuns
-- batchId (string, required, unique)
-- runStatus (string: pending/running/succeeded/failed)
-- lifecycleStage (string: created/validated/ingested/archived)
-- startedAt (date)
-- completedAt (date)
-
-##### ingestQueue
-- datasetName (string, required)
-- status (string: queued/running/completed/failed)
-- createdAt (date)
-- updatedAt (date)
-
-
-##Tools Used to create the Database, Collections and Indexes:
+## Tools Used to Create the Database, Collections, and Indexes
 
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/d4ba2ee3-7567-4fe0-b44a-c3ab60548f08" />
 
-_I created the database via Mongo Compass and via the express js commands. To demonstrate multiple ways to create the database and collections. The aim was to demonstrated the main important aspects of the database design. Particulr choosing the right collation and fields._ 
+I created the database via Mongo Compass and via Express.js commands to demonstrate multiple ways to create the database and collections. The aim was to demonstrate the main important aspects of the database design — particularly choosing the right collation and fields.
 
 <img width="450" height="100" alt="image" src="https://github.com/user-attachments/assets/4080c852-7b3f-4dca-bc97-55427cffbe27" />
 
-_Using js to create the indexes as part of one script_
+Using JS to create the indexes as part of one script.
 
 <img width="450" height="100" alt="image" src="https://github.com/user-attachments/assets/e94fcb90-1685-4c61-9dab-dc1dcf1f04cf" />
 
+---
 
 ## Collation Strategy
 
-All ingestion-related collections use the following collation:
+All ingestion‑related collections use:
 
+```
 {
   "locale": "en",
   "strength": 2
 }
+```
 
-Reason:
-- Ensures case-insensitive matching for datasetName, runStatus, lifecycleStage, and queue status.
-- Prevents ingestion failures caused by case mismatches.
-- Provides predictable sorting and filtering for English-language metadata.
-- Matches enterprise Atlas DBA standards for ingestion pipelines.
+**Reason**
+- Ensures case‑insensitive matching for datasetName, runStatus, lifecycleStage, and queue status  
+- Prevents ingestion failures caused by case mismatches  
+- Provides predictable sorting and filtering  
+- Matches enterprise Atlas DBA standards  
 
-Collections using this collation:
-- metadata
-- assets
-- batchRuns
-- ingestQueue
+**Collections using this collation**
+- metadata  
+- assets  
+- batchRuns  
+- ingestQueue  
 
 Indexes inherit this collation automatically.
 
+---
 
+## Index Creation
 
-### Index Creation
+### metadata indexes
+- `{ datasetName: 1 }` (unique)  
+  **Reason:** Fast lookup of metadata by datasetName and enforcement of dataset uniqueness.
 
-##### metadata indexes
-- { datasetName: 1 } (unique)
-Reason: Fast lookup of metadata by datasetName and enforcement of dataset uniqueness.
+---
 
+### assets collection
 
-
-
-#### assets collection
-
-Purpose:
+**Purpose**  
 Stores individual data records associated with a dataset.
 
-Fields:
-- datasetName (string)
-- data (object)
-- createdAt (date)
+**Fields**
+- datasetName (string)  
+- data (object)  
+- createdAt (date)  
 
-Indexes:
-- datasetName
-- createdAt
-
-
+**Indexes**
+- datasetName  
+- createdAt  
